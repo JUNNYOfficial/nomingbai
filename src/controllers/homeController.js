@@ -1,6 +1,13 @@
-export function getHome(req, res) {
+const { getDefaultMessage } = require("../services/messageService");
+
+function getHome(req, res) {
   res.json({
-    message: "Welcome to nomingbai backend",
-    status: "ok"
+    message: getDefaultMessage(),
+    status: "ok",
+    timestamp: new Date().toISOString()
   });
 }
+
+module.exports = {
+  getHome
+};
