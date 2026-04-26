@@ -1,53 +1,321 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nomingbai</title>
+  <title>nomingbai - 常识 Agent</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 40px; background: #f8fafc; color: #0f172a; }
-    .container { max-width: 700px; margin: 0 auto; }
-    h1 { color: #2563eb; }
-    code { background: #e2e8f0; padding: 0.2em 0.4em; border-radius: 4px; }
-    .api-box { margin-top: 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; }
-    .api-box pre { margin: 0; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 40px 20px;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.9);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .result-area {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      margin-right: 8px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 50%;
+      border-top-color: #667eea;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .auth-section {
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }
+
+    .agent-section {
+      margin-top: 20px;
+    }
+
+    .quick-examples {
+      margin-top: 15px;
+      padding: 15px;
+      background: #f0f9ff;
+      border-radius: 8px;
+      border-left: 4px solid #3b82f6;
+    }
+
+    .quick-examples h4 {
+      margin-bottom: 10px;
+      color: #1e40af;
+      font-size: 14px;
+    }
+
+    .example-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .example-tag {
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .example-tag:hover {
+      background: #bfdbfe;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 20px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>nomingbai</h1>
-    <p>这是一个后端优先的网页项目模板，前端通过 API 从后端获取数据。</p>
-    <div class="api-box">
-      <h2>API 调用</h2>
-      <p>后台接口：</p>
-      <pre><code>GET /api/</code></pre>
-      <pre><code>GET /api/status</code></pre>
-      <pre><code>GET /api/data</code></pre>
-      <pre><code>POST /api/auth/register</code></pre>
-      <pre><code>POST /api/auth/login</code></pre>
-      <pre><code>POST /api/agent/invoke</code></pre>
+    <header class="header">
+      <h1>🤖 nomingbai</h1>
+      <p>基于常识库的智能 Agent - 帮你解答生活中的隐性常识</p>
+    </header>
 
-      <div>
-        <h3>注册 / 登录</h3>
-        <label>用户名 <input id="username" type="text" /></label><br />
-        <label>密码 <input id="password" type="password" /></label><br />
-        <button id="registerButton">注册</button>
-        <button id="loginButton">登录</button>
+    <div class="main-content">
+      <div class="card">
+        <h2>🔐 用户认证</h2>
+        <div class="auth-section">
+          <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" class="form-input" placeholder="输入用户名" />
+          </div>
+          <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" class="form-input" placeholder="输入密码" />
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button id="registerButton" class="btn btn-primary">
+              <span id="registerIcon">📝</span>
+              <span id="registerText">注册</span>
+            </button>
+            <button id="loginButton" class="btn btn-secondary">
+              <span id="loginIcon">🔑</span>
+              <span id="loginText">登录</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="agent-section">
+          <h2>🧠 Agent 对话</h2>
+          <div class="form-group">
+            <label for="promptInput">输入你的问题</label>
+            <input type="text" id="promptInput" class="form-input" placeholder="例如：一会儿代表多长时间？" />
+          </div>
+          <button id="invokeButton" class="btn btn-primary" style="width: 100%;">
+            <span id="invokeIcon">🚀</span>
+            <span id="invokeText">调用 Agent</span>
+          </button>
+
+          <div class="quick-examples">
+            <h4>💡 快速示例</h4>
+            <div class="example-tags">
+              <span class="example-tag" onclick="setPrompt('一会儿代表多长时间？')">一会儿代表多长时间？</span>
+              <span class="example-tag" onclick="setPrompt('面试应该提前多久到？')">面试应该提前多久到？</span>
+              <span class="example-tag" onclick="setPrompt('马上到是什么意思？')">马上到是什么意思？</span>
+              <span class="example-tag" onclick="setPrompt('饭局提前多久合适？')">饭局提前多久合适？</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div style="margin-top:16px;">
-        <h3>Agent 调用</h3>
-        <label>提示语 <input id="promptInput" type="text" style="width:100%" /></label><br />
-        <button id="invokeButton">调用 Agent</button>
+      <div class="card">
+        <h2>
+          <span class="status-indicator"></span>
+          响应结果
+        </h2>
+        <div id="result" class="result-area">欢迎使用 nomingbai Agent！请先注册或登录，然后输入问题开始对话。</div>
       </div>
-
-      <pre id="result">等待请求...</pre>
     </div>
   </div>
 
   <script>
-    const loadButton = document.getElementById('loadButton');
-    const loadDataButton = document.getElementById('loadDataButton');
     const registerButton = document.getElementById('registerButton');
     const loginButton = document.getElementById('loginButton');
     const invokeButton = document.getElementById('invokeButton');
@@ -56,6 +324,8 @@
     const passwordInput = document.getElementById('password');
     const promptInput = document.getElementById('promptInput');
 
+    let isLoggedIn = false;
+
     function getToken() {
       return localStorage.getItem('nomingbai_token');
     }
@@ -63,11 +333,52 @@
     function setToken(token) {
       if (token) {
         localStorage.setItem('nomingbai_token', token);
+        isLoggedIn = true;
+        updateUI();
+      }
+    }
+
+    function updateUI() {
+      const token = getToken();
+      if (token) {
+        registerButton.style.display = 'none';
+        loginButton.textContent = '已登录';
+        loginButton.disabled = true;
+        invokeButton.disabled = false;
+        result.textContent = '登录成功！现在可以开始与 Agent 对话了。';
+      } else {
+        registerButton.style.display = 'inline-flex';
+        loginButton.textContent = '登录';
+        loginButton.disabled = false;
+        invokeButton.disabled = true;
+        result.textContent = '欢迎使用 nomingbai Agent！请先注册或登录，然后输入问题开始对话。';
+      }
+    }
+
+    function setLoading(button, loading) {
+      const icon = button.querySelector('span:first-child');
+      const text = button.querySelector('span:last-child');
+
+      if (loading) {
+        icon.innerHTML = '<div class="loading"></div>';
+        text.textContent = '处理中...';
+        button.disabled = true;
+      } else {
+        if (button.id === 'registerButton') {
+          icon.textContent = '📝';
+          text.textContent = '注册';
+        } else if (button.id === 'loginButton') {
+          icon.textContent = '🔑';
+          text.textContent = '登录';
+        } else if (button.id === 'invokeButton') {
+          icon.textContent = '🚀';
+          text.textContent = '调用 Agent';
+        }
+        button.disabled = false;
       }
     }
 
     async function fetchApi(path, options = {}) {
-      result.textContent = '正在加载...';
       try {
         const headers = options.headers || {};
         const token = getToken();
@@ -76,59 +387,111 @@
         }
         const response = await fetch(path, { ...options, headers });
         const data = await response.json();
-        result.textContent = JSON.stringify(data, null, 2);
         return data;
       } catch (error) {
-        result.textContent = '请求失败：' + error.message;
+        throw new Error(error.message);
       }
     }
 
-    loadButton.addEventListener('click', () => fetchApi('/api/'));
-    loadDataButton.addEventListener('click', () => fetchApi('/api/data'));
+    function showResult(content, isError = false) {
+      result.style.color = isError ? '#dc2626' : '#1f2937';
+      result.textContent = content;
+    }
 
     registerButton.addEventListener('click', async () => {
       const username = usernameInput.value.trim();
       const password = passwordInput.value;
+
       if (!username || !password) {
-        result.textContent = '请输入用户名和密码进行注册。';
+        showResult('请输入用户名和密码进行注册。', true);
         return;
       }
-      await fetchApi('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
+
+      setLoading(registerButton, true);
+      try {
+        const data = await fetchApi('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        showResult('注册成功！现在可以登录了。');
+      } catch (error) {
+        showResult('注册失败：' + error.message, true);
+      } finally {
+        setLoading(registerButton, false);
+      }
     });
 
     loginButton.addEventListener('click', async () => {
       const username = usernameInput.value.trim();
       const password = passwordInput.value;
+
       if (!username || !password) {
-        result.textContent = '请输入用户名和密码进行登录。';
+        showResult('请输入用户名和密码进行登录。', true);
         return;
       }
-      const data = await fetchApi('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      if (data && data.token) {
-        setToken(data.token);
+
+      setLoading(loginButton, true);
+      try {
+        const data = await fetchApi('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        if (data.token) {
+          setToken(data.token);
+          showResult(`登录成功！欢迎回来，${data.username}！\n\n现在可以开始与 Agent 对话了。`);
+        } else {
+          showResult('登录失败：未收到有效的令牌。', true);
+        }
+      } catch (error) {
+        showResult('登录失败：' + error.message, true);
+      } finally {
+        setLoading(loginButton, false);
       }
     });
 
-    invokeButton.addEventListener('click', () => {
+    invokeButton.addEventListener('click', async () => {
       const prompt = promptInput.value.trim();
+
       if (!prompt) {
-        result.textContent = '请输入要发送给 Agent 的提示语。';
+        showResult('请输入要发送给 Agent 的问题。', true);
         return;
       }
-      fetchApi('/api/agent/invoke', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
-      });
+
+      if (!getToken()) {
+        showResult('请先登录后再使用 Agent。', true);
+        return;
+      }
+
+      setLoading(invokeButton, true);
+      try {
+        const data = await fetchApi('/api/agent/invoke', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+
+        showResult(`🤖 Agent 回答：\n\n${data.output}\n\n---\n用户：${data.user} | 时间：${new Date(data.createdAt).toLocaleString('zh-CN')}`);
+      } catch (error) {
+        showResult('Agent 调用失败：' + error.message, true);
+      } finally {
+        setLoading(invokeButton, false);
+      }
     });
+
+    function setPrompt(text) {
+      promptInput.value = text;
+    }
+
+    // Initialize UI
+    updateUI();
+
+    // Auto-focus on prompt input if logged in
+    if (getToken()) {
+      promptInput.focus();
+    }
   </script>
 </body>
 </html>
