@@ -1,6 +1,6 @@
 const express = require("express");
 const { registerUser, authenticateUser } = require("../services/userService");
-const { signToken } = require("../lib/auth");
+const { signToken, validatePassword } = require("../lib/auth");
 
 const router = express.Router();
 
@@ -9,6 +9,11 @@ router.post("/register", async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
       return res.status(400).json({ error: "username and password are required" });
+    }
+
+    const validation = validatePassword(password);
+    if (!validation.valid) {
+      return res.status(400).json({ error: validation.message });
     }
 
     await registerUser(username.trim(), password);
