@@ -8,7 +8,7 @@ function loadCommonsenseData() {
     return commonsenseData;
   }
 
-  const dataDir = path.join(__dirname, "../Kimi-Agent/data");
+  const dataDir = path.join(__dirname, "../../Kimi-Agent");
   const files = [
     "时间常识_data.json",
     "流程常识.json",
