@@ -5,7 +5,9 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "NODE_ENV=development node src/server.js"
+    "dev": "NODE_ENV=development node src/server.js",
+    "build": "cd frontend && npm run build",
+    "dev:frontend": "cd frontend && npm run dev"
   },
   "keywords": [
     "web",
