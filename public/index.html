@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>nomingbai - 常识 Agent</title>
   <style>
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f5f5f5;
+      --bg-tertiary: #eeeeee;
+      --text-primary: #111111;
+      --text-secondary: #555555;
+      --text-muted: #888888;
+      --border: #e0e0e0;
+      --border-strong: #cccccc;
+      --accent: #000000;
+      --accent-hover: #333333;
+      --error: #cc0000;
+      --success: #006600;
+      --radius: 4px;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -12,207 +28,167 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
       min-height: 100vh;
-      color: #1f2937;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 960px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 48px 24px;
     }
 
+    /* Header */
     .header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding: 40px 20px;
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
     }
 
     .header h1 {
-      font-size: 3rem;
-      font-weight: 700;
-      color: white;
-      margin-bottom: 10px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
     }
 
     .header p {
-      font-size: 1.2rem;
-      color: rgba(255,255,255,0.9);
-      max-width: 600px;
-      margin: 0 auto;
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
     }
 
+    /* Layout */
     .main-content {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin-bottom: 40px;
+      gap: 32px;
     }
 
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* Panel */
+    .panel {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
     }
 
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-    }
-
-    .card h2 {
-      font-size: 1.5rem;
+    .panel h2 {
+      font-size: 0.875rem;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
       margin-bottom: 20px;
-      color: #1f2937;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
     }
 
-    .card h2::before {
-      content: '';
-      width: 4px;
-      height: 24px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      border-radius: 2px;
-    }
-
+    /* Form */
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      font-size: 0.8125rem;
       font-weight: 500;
-      color: #374151;
+      color: var(--text-secondary);
     }
 
     .form-input {
       width: 100%;
-      padding: 12px 16px;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 0.9375rem;
+      font-family: inherit;
+      color: var(--text-primary);
+      background: var(--bg);
+      transition: border-color 0.15s ease;
+    }
+
+    .form-input::placeholder {
+      color: #aaaaaa;
     }
 
     .form-input:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: var(--accent);
+    }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
     }
 
     .btn {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      padding: 10px 18px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
       font-weight: 500;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
     }
 
     .btn-secondary {
-      background: #f3f4f6;
-      color: #374151;
-      border: 1px solid #d1d5db;
+      background: var(--bg);
+      color: var(--text-primary);
+      border-color: var(--border-strong);
     }
 
-    .btn-secondary:hover {
-      background: #e5e7eb;
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-secondary);
     }
 
     .btn:disabled {
-      opacity: 0.6;
+      opacity: 0.45;
       cursor: not-allowed;
-      transform: none;
     }
 
-    .result-area {
-      margin-top: 20px;
-      padding: 20px;
-      background: #f8fafc;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-      font-size: 14px;
-      white-space: pre-wrap;
-      word-break: break-word;
-      max-height: 300px;
-      overflow-y: auto;
+    .btn-block {
+      width: 100%;
+      margin-top: 4px;
     }
 
-    .status-indicator {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #10b981;
-      margin-right: 8px;
-      animation: pulse 2s infinite;
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    .loading {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid #e5e7eb;
-      border-radius: 50%;
-      border-top-color: #667eea;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .auth-section {
-      border-bottom: 1px solid #e5e7eb;
-      padding-bottom: 20px;
-      margin-bottom: 20px;
-    }
-
-    .agent-section {
+    /* Examples */
+    .examples {
       margin-top: 20px;
     }
 
-    .quick-examples {
-      margin-top: 15px;
-      padding: 15px;
-      background: #f0f9ff;
-      border-radius: 8px;
-      border-left: 4px solid #3b82f6;
-    }
-
-    .quick-examples h4 {
+    .examples-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       margin-bottom: 10px;
-      color: #1e40af;
-      font-size: 14px;
     }
 
     .example-tags {
@@ -222,30 +198,113 @@
     }
 
     .example-tag {
-      background: #dbeafe;
-      color: #1e40af;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      padding: 5px 10px;
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      border: 1px solid var(--border);
+      transition: background-color 0.15s ease, color 0.15s ease;
     }
 
     .example-tag:hover {
-      background: #bfdbfe;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
     }
 
+    /* Result */
+    .result-area {
+      margin-top: 16px;
+      padding: 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+      font-size: 0.8125rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 320px;
+      overflow-y: auto;
+      color: var(--text-secondary);
+    }
+
+    .result-area.is-error {
+      color: var(--error);
+      background: #fff5f5;
+      border-color: #ffcccc;
+    }
+
+    .result-area.is-success {
+      color: var(--success);
+      background: #f5fff5;
+      border-color: #ccffcc;
+    }
+
+    /* Status dot */
+    .status-indicator {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #00aa00;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .status-indicator.pulse {
+      animation: pulse 2s infinite;
+    }
+
+    /* Loading spinner */
+    .loading {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      border-top-color: var(--accent);
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Responsive */
     @media (max-width: 768px) {
+      .container {
+        padding: 24px 16px;
+      }
+
       .main-content {
         grid-template-columns: 1fr;
         gap: 20px;
       }
 
-      .header h1 {
-        font-size: 2rem;
+      .header {
+        margin-bottom: 32px;
       }
 
-      .card {
+      .panel {
         padding: 20px;
       }
     }
@@ -254,65 +313,64 @@
 <body>
   <div class="container">
     <header class="header">
-      <h1>🤖 nomingbai</h1>
-      <p>基于常识库的智能 Agent - 帮你解答生活中的隐性常识</p>
+      <h1>nomingbai</h1>
+      <p>基于常识库的智能 Agent，解答生活中的隐性常识</p>
     </header>
 
     <div class="main-content">
-      <div class="card">
-        <h2>🔐 用户认证</h2>
-        <div class="auth-section">
-          <div class="form-group">
-            <label for="username">用户名</label>
-            <input type="text" id="username" class="form-input" placeholder="输入用户名" />
-          </div>
-          <div class="form-group">
-            <label for="password">密码</label>
-            <input type="password" id="password" class="form-input" placeholder="输入密码" />
-          </div>
-          <div style="display: flex; gap: 10px;">
-            <button id="registerButton" class="btn btn-primary">
-              <span id="registerIcon">📝</span>
-              <span id="registerText">注册</span>
-            </button>
-            <button id="loginButton" class="btn btn-secondary">
-              <span id="loginIcon">🔑</span>
-              <span id="loginText">登录</span>
-            </button>
-          </div>
+      <div class="panel">
+        <h2>用户认证</h2>
+        <div class="form-group">
+          <label for="username">用户名</label>
+          <input type="text" id="username" class="form-input" placeholder="输入用户名" />
+        </div>
+        <div class="form-group">
+          <label for="password">密码</label>
+          <input type="password" id="password" class="form-input" placeholder="输入密码" />
+        </div>
+        <div class="btn-group">
+          <button id="registerButton" class="btn btn-primary">
+            <span id="registerText">注册</span>
+          </button>
+          <button id="loginButton" class="btn btn-secondary">
+            <span id="loginText">登录</span>
+          </button>
         </div>
 
-        <div class="agent-section">
-          <h2>🧠 Agent 对话</h2>
-          <div class="form-group">
-            <label for="promptInput">输入你的问题</label>
-            <input type="text" id="promptInput" class="form-input" placeholder="例如：一会儿代表多长时间？" />
-          </div>
-          <button id="invokeButton" class="btn btn-primary" style="width: 100%;">
-            <span id="invokeIcon">🚀</span>
-            <span id="invokeText">调用 Agent</span>
-          </button>
+        <hr class="divider" />
 
-          <div class="quick-examples">
-            <h4>💡 快速示例</h4>
-            <div class="example-tags">
-              <span class="example-tag" onclick="setPrompt('一会儿代表多长时间？')">一会儿代表多长时间？</span>
-              <span class="example-tag" onclick="setPrompt('面试应该提前多久到？')">面试应该提前多久到？</span>
-              <span class="example-tag" onclick="setPrompt('马上到是什么意思？')">马上到是什么意思？</span>
-              <span class="example-tag" onclick="setPrompt('饭局提前多久合适？')">饭局提前多久合适？</span>
-            </div>
+        <h2>Agent 对话</h2>
+        <div class="form-group">
+          <label for="promptInput">输入你的问题</label>
+          <input type="text" id="promptInput" class="form-input" placeholder="例如：一会儿代表多长时间？" />
+        </div>
+        <button id="invokeButton" class="btn btn-primary btn-block">
+          <span id="invokeText">调用 Agent</span>
+        </button>
+
+        <div class="examples">
+          <div class="examples-title">快速示例</div>
+          <div class="example-tags">
+            <span class="example-tag" onclick="setPrompt('一会儿代表多长时间？')">一会儿代表多长时间？</span>
+            <span class="example-tag" onclick="setPrompt('面试应该提前多久到？')">面试应该提前多久到？</span>
+            <span class="example-tag" onclick="setPrompt('马上到是什么意思？')">马上到是什么意思？</span>
+            <span class="example-tag" onclick="setPrompt('饭局提前多久合适？')">饭局提前多久合适？</span>
           </div>
         </div>
       </div>
 
-      <div class="card">
+      <div class="panel">
         <h2>
-          <span class="status-indicator"></span>
+          <span class="status-indicator pulse"></span>
           响应结果
         </h2>
         <div id="result" class="result-area">欢迎使用 nomingbai Agent！请先注册或登录，然后输入问题开始对话。</div>
       </div>
     </div>
+
+    <footer class="footer">
+      nomingbai &middot; 常识 Agent
+    </footer>
   </div>
 
   <script>
@@ -346,32 +404,29 @@
         loginButton.disabled = true;
         invokeButton.disabled = false;
         result.textContent = '登录成功！现在可以开始与 Agent 对话了。';
+        result.className = 'result-area is-success';
       } else {
         registerButton.style.display = 'inline-flex';
         loginButton.textContent = '登录';
         loginButton.disabled = false;
         invokeButton.disabled = true;
         result.textContent = '欢迎使用 nomingbai Agent！请先注册或登录，然后输入问题开始对话。';
+        result.className = 'result-area';
       }
     }
 
     function setLoading(button, loading) {
-      const icon = button.querySelector('span:first-child');
-      const text = button.querySelector('span:last-child');
+      const text = button.querySelector('span');
 
       if (loading) {
-        icon.innerHTML = '<div class="loading"></div>';
-        text.textContent = '处理中...';
+        text.innerHTML = '<span class="loading"></span>处理中...';
         button.disabled = true;
       } else {
         if (button.id === 'registerButton') {
-          icon.textContent = '📝';
           text.textContent = '注册';
         } else if (button.id === 'loginButton') {
-          icon.textContent = '🔑';
           text.textContent = '登录';
         } else if (button.id === 'invokeButton') {
-          icon.textContent = '🚀';
           text.textContent = '调用 Agent';
         }
         button.disabled = false;
@@ -394,8 +449,8 @@
     }
 
     function showResult(content, isError = false) {
-      result.style.color = isError ? '#dc2626' : '#1f2937';
       result.textContent = content;
+      result.className = 'result-area' + (isError ? ' is-error' : '');
     }
 
     registerButton.addEventListener('click', async () => {
@@ -441,7 +496,8 @@
 
         if (data.token) {
           setToken(data.token);
-          showResult(`登录成功！欢迎回来，${data.username}！\n\n现在可以开始与 Agent 对话了。`);
+          showResult(`登录成功！欢迎回来，${data.username}。\n\n现在可以开始与 Agent 对话了。`);
+          result.className = 'result-area is-success';
         } else {
           showResult('登录失败：未收到有效的令牌。', true);
         }
@@ -473,7 +529,7 @@
           body: JSON.stringify({ prompt })
         });
 
-        showResult(`🤖 Agent 回答：\n\n${data.output}\n\n---\n用户：${data.user} | 时间：${new Date(data.createdAt).toLocaleString('zh-CN')}`);
+        showResult(`Agent 回答：\n\n${data.output}\n\n---\n用户：${data.user} | 时间：${new Date(data.createdAt).toLocaleString('zh-CN')}`);
       } catch (error) {
         showResult('Agent 调用失败：' + error.message, true);
       } finally {
