@@ -36,28 +36,46 @@ async function init() {
   throw new Error(`Unsupported database protocol: ${protocol}`);
 }
 
+function prepareQuery(sql, params = []) {
+  if (clientType === "postgres") {
+    const values = [];
+    let index = 1;
+    const finalSql = sql.replace(/\?/g, () => "$" + index++);
+    values.push(...params);
+    return { sql: finalSql, params: values };
+  }
+
+  return { sql, params };
+}
+
 async function query(sql, params = []) {
   if (!isConfigured()) {
     throw new Error("Database not configured. Set DATABASE_URL in .env or environment.");
   }
 
   await init();
+  const prepared = prepareQuery(sql, params);
 
   if (clientType === "postgres") {
-    const result = await client.query(sql, params);
+    const result = await client.query(prepared.sql, prepared.params);
     return result.rows;
   }
 
   if (clientType === "mysql") {
-    const [rows] = await client.execute(sql, params);
+    const [rows] = await client.execute(prepared.sql, prepared.params);
     return rows;
   }
 
   throw new Error("Database client is not initialized.");
 }
 
+function getDialect() {
+  return clientType;
+}
+
 module.exports = {
   isConfigured,
   init,
-  query
+  query,
+  getDialect
 };
