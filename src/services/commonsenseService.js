@@ -9,22 +9,38 @@ function loadCommonsenseData() {
   }
 
   const dataDir = path.join(__dirname, "../../Kimi-Agent");
-  const files = [
-    "时间常识_data.json",
-    "流程常识.json",
-    "社交语义_5条常识数据.json",
-    "量化常识_5条.json"
-  ];
+  const mainDb = path.join(dataDir, "commonsense_database.json");
 
   commonsenseData = [];
-  for (const file of files) {
-    const filePath = path.join(dataDir, file);
-    if (fs.existsSync(filePath)) {
-      try {
-        const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
-        commonsenseData.push(...data);
-      } catch (error) {
-        console.warn(`Failed to load ${file}:`, error.message);
+  if (fs.existsSync(mainDb)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(mainDb, "utf8"));
+      if (Array.isArray(data)) {
+        commonsenseData = data;
+        console.log(`Loaded ${data.length} commonsense items from commonsense_database.json`);
+      } else {
+        console.warn("commonsense_database.json is not an array");
+      }
+    } catch (error) {
+      console.warn("Failed to load commonsense_database.json:", error.message);
+    }
+  } else {
+    // Fallback to legacy individual files
+    const files = [
+      "时间常识_data.json",
+      "流程常识.json",
+      "社交语义_5条常识数据.json",
+      "量化常识_5条.json"
+    ];
+    for (const file of files) {
+      const filePath = path.join(dataDir, file);
+      if (fs.existsSync(filePath)) {
+        try {
+          const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+          commonsenseData.push(...data);
+        } catch (error) {
+          console.warn(`Failed to load ${file}:`, error.message);
+        }
       }
     }
   }
