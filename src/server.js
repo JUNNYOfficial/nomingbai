@@ -1,9 +1,10 @@
 const express = require("express");
 const path = require("path");
+const config = require("./config");
 const indexRouter = require("./routes/index");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = config.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -25,4 +26,5 @@ app.use((req, res) => {
 
 app.listen(port, () => {
   console.log(`nomingbai backend running at http://localhost:${port}`);
+  console.log(`NODE_ENV=${config.NODE_ENV}, DATABASE_URL=${config.DATABASE_URL ? "configured" : "missing"}`);
 });

@@ -22,25 +22,31 @@
       <p>后台接口：</p>
       <pre><code>GET /api/</code></pre>
       <pre><code>GET /api/status</code></pre>
-      <button id="loadButton">获取后端数据</button>
+      <pre><code>GET /api/data</code></pre>
+      <button id="loadButton">获取基本信息</button>
+      <button id="loadDataButton">获取数据接口</button>
       <pre id="result">等待请求...</pre>
     </div>
   </div>
 
   <script>
-    const button = document.getElementById('loadButton');
+    const loadButton = document.getElementById('loadButton');
+    const loadDataButton = document.getElementById('loadDataButton');
     const result = document.getElementById('result');
 
-    button.addEventListener('click', async () => {
+    async function fetchApi(path) {
       result.textContent = '正在加载...';
       try {
-        const response = await fetch('/api/');
+        const response = await fetch(path);
         const data = await response.json();
         result.textContent = JSON.stringify(data, null, 2);
       } catch (error) {
         result.textContent = '请求失败：' + error.message;
       }
-    });
+    }
+
+    loadButton.addEventListener('click', () => fetchApi('/api/'));
+    loadDataButton.addEventListener('click', () => fetchApi('/api/data'));
   </script>
 </body>
 </html>
