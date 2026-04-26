@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config");
 
-const secret = config.JWT_SECRET || "nomingbai_default_secret";
+const secret = config.JWT_SECRET;
 
 function signToken(payload) {
   return jwt.sign(payload, secret, { expiresIn: "6h" });
@@ -23,7 +23,21 @@ function verifyToken(req, res, next) {
   }
 }
 
+function validatePassword(password) {
+  if (!password || typeof password !== "string") {
+    return { valid: false, message: "密码不能为空" };
+  }
+  if (password.length < 6) {
+    return { valid: false, message: "密码长度至少为 6 位" };
+  }
+  if (password.length > 128) {
+    return { valid: false, message: "密码长度不能超过 128 位" };
+  }
+  return { valid: true };
+}
+
 module.exports = {
   signToken,
-  verifyToken
+  verifyToken,
+  validatePassword
 };
