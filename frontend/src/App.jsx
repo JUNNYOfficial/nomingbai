@@ -9,6 +9,7 @@ import ChatPage from './pages/ChatPage'
 import HistoryPage from './pages/HistoryPage'
 import BrowsePage from './pages/BrowsePage'
 import DetailPage from './pages/DetailPage'
+import AdminPage from './pages/AdminPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 function Layout() {
@@ -28,6 +29,7 @@ function Layout() {
           <Route path="/history" element={<PrivateRoute><HistoryPage /></PrivateRoute>} />
           <Route path="/browse" element={<BrowsePage />} />
           <Route path="/browse/:id" element={<DetailPage />} />
+          <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

@@ -1,10 +1,10 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { Bot, BookOpen, History, User, LogOut, Menu, X } from 'lucide-react'
+import { Bot, BookOpen, History, User, LogOut, Menu, X, Settings } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Navbar() {
-  const { user, isLoggedIn, logout } = useAuth()
+  const { user, isLoggedIn, logout, loading } = useAuth()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -13,6 +13,8 @@ export default function Navbar() {
     { to: '/browse', label: '常识库', icon: BookOpen },
     { to: '/history', label: '历史记录', icon: History },
   ]
+
+  const adminItem = { to: '/admin', label: '管理', icon: Settings }
 
   const isActive = (path) => {
     if (path === '/') {
@@ -52,6 +54,17 @@ export default function Navbar() {
               <div className="w-16 h-5 bg-gray-100 rounded animate-pulse" />
             ) : isLoggedIn ? (
               <>
+                <Link
+                  to="/admin"
+                  className={`flex items-center gap-1 px-2 py-1 rounded-md text-sm transition-colors ${
+                    isActive('/admin')
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                  title="管理后台"
+                >
+                  <Settings className="w-4 h-4" />
+                </Link>
                 <span className="text-sm text-gray-500 flex items-center gap-1">
                   <User className="w-4 h-4" />
                   {user?.username}
@@ -104,18 +117,32 @@ export default function Navbar() {
             ))}
             <div className="pt-2 border-t border-gray-100">
               {isLoggedIn ? (
-                <button
-                  onClick={() => {
-                    if (confirm('确定要退出登录吗？')) {
-                      logout()
-                      setMenuOpen(false)
-                    }
-                  }}
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 w-full"
-                >
-                  <LogOut className="w-4 h-4" />
-                  退出登录
-                </button>
+                <>
+                  <Link
+                    to="/admin"
+                    onClick={() => setMenuOpen(false)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${
+                      isActive('/admin')
+                        ? 'bg-gray-100 text-gray-900'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Settings className="w-4 h-4" />
+                    管理后台
+                  </Link>
+                  <button
+                    onClick={() => {
+                      if (confirm('确定要退出登录吗？')) {
+                        logout()
+                        setMenuOpen(false)
+                      }
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 w-full"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    退出登录
+                  </button>
+                </>
               ) : (
                 <Link
                   to="/login"
