@@ -5,7 +5,7 @@ import { Search, BookOpen, Tag, ChevronRight, Layers } from 'lucide-react'
 import { SkeletonCard } from '../components/Skeleton'
 
 export default function BrowsePage() {
-  useEffect(() => { document.title = '常识库 — nomingbai' }, [])
+  useEffect(() => { document.title = '常识库 — 未言' }, [])
   const [items, setItems] = useState([])
   const [categories, setCategories] = useState([])
   const [activeCategory, setActiveCategory] = useState('')

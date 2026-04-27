@@ -5,7 +5,7 @@ import { useToast } from '../components/Toast'
 import { Bot, ArrowRight, AlertCircle, BookOpen, Check } from 'lucide-react'
 
 export default function RegisterPage() {
-  useEffect(() => { document.title = '注册 — nomingbai' }, [])
+  useEffect(() => { document.title = '注册 — 未言' }, [])
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -58,7 +58,7 @@ export default function RegisterPage() {
         <div className="relative z-10">
           <Link to="/" className="inline-flex items-center gap-2 text-white font-semibold text-lg tracking-tight">
             <Bot className="w-6 h-6" />
-            nomingbai
+            未言
           </Link>
         </div>
 

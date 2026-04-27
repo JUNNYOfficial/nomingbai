@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { Bot, ArrowLeft } from 'lucide-react'
 
 export default function NotFoundPage() {
-  useEffect(() => { document.title = '页面未找到 — nomingbai' }, [])
+  useEffect(() => { document.title = '页面未找到 — 未言' }, [])
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="text-center max-w-sm">

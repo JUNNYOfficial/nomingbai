@@ -4,7 +4,7 @@ import { ArrowRight, Sparkles, BookOpen, Clock, Shield } from 'lucide-react'
 import { useEffect } from 'react'
 
 export default function HomePage() {
-  useEffect(() => { document.title = 'nomingbai — 解答生活中的隐性常识' }, [])
+  useEffect(() => { document.title = '未言 — 解答生活中的隐性常识' }, [])
   const { isLoggedIn } = useAuth()
 
   return (
@@ -18,7 +18,7 @@ export default function HomePage() {
           解答生活中的隐性常识
         </h1>
         <p className="text-lg text-gray-500 max-w-xl mx-auto mb-10 leading-relaxed">
-          nomingbai 是一个专注于日常生活常识的 AI Agent。<br className="hidden sm:block" />
+          未言是一个专注于日常生活常识的 AI Agent。<br className="hidden sm:block" />
           从时间语义到社交礼仪，帮你理解那些"明明应该知道却没人教"的事情。
         </p>
 

@@ -5,7 +5,7 @@ import { ArrowLeft, Tag, AlertTriangle, BookOpen, Link2, Info, Star } from 'luci
 import { SkeletonDetail } from '../components/Skeleton'
 
 export default function DetailPage() {
-  useEffect(() => { document.title = '常识详情 — nomingbai' }, [])
+  useEffect(() => { document.title = '常识详情 — 未言' }, [])
   const { id } = useParams()
   const [item, setItem] = useState(null)
   const [loading, setLoading] = useState(false)

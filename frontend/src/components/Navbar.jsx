@@ -27,7 +27,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-14">
           <Link to="/" className="flex items-center gap-2 text-gray-900 font-semibold text-lg tracking-tight">
             <Bot className="w-5 h-5" />
-            nomingbai
+            未言
           </Link>
 
           <div className="hidden sm:flex items-center gap-1">

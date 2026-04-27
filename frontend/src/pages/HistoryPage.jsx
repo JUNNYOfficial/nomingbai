@@ -5,7 +5,7 @@ import MarkdownText from '../components/MarkdownText'
 import { useToast } from '../components/Toast'
 
 export default function HistoryPage() {
-  useEffect(() => { document.title = '历史记录 — nomingbai' }, [])
+  useEffect(() => { document.title = '历史记录 — 未言' }, [])
   const [logs, setLogs] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)

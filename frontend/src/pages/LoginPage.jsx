@@ -6,7 +6,7 @@ import { useToast } from '../components/Toast'
 import { Bot, ArrowRight, AlertCircle, BookOpen } from 'lucide-react'
 
 export default function LoginPage() {
-  useEffect(() => { document.title = '登录 — nomingbai' }, [])
+  useEffect(() => { document.title = '登录 — 未言' }, [])
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -50,7 +50,7 @@ export default function LoginPage() {
         <div className="relative z-10">
           <Link to="/" className="inline-flex items-center gap-2 text-white font-semibold text-lg tracking-tight">
             <Bot className="w-6 h-6" />
-            nomingbai
+            未言
           </Link>
         </div>
 
@@ -60,7 +60,7 @@ export default function LoginPage() {
           </h2>
           <p className="text-gray-400 leading-relaxed">
             从时间语义到社交礼仪，从消费陷阱到生活避险，
-            nomingbai 帮你理解那些"明明应该知道却没人教"的事情。
+            未言 帮你理解那些"明明应该知道却没人教"的事情。
           </p>
         </div>
 

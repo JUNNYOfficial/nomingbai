@@ -14,7 +14,7 @@ const EXAMPLES = [
 ]
 
 export default function ChatPage() {
-  useEffect(() => { document.title = '对话 — nomingbai' }, [])
+  useEffect(() => { document.title = '对话 — 未言' }, [])
   const [messages, setMessages] = useState(() => {
     try {
       const saved = localStorage.getItem('nomingbai_chat')
@@ -114,7 +114,7 @@ export default function ChatPage() {
               </div>
               <h2 className="text-xl font-semibold text-gray-900 mb-2">开始对话</h2>
               <p className="text-sm text-gray-500 mb-6 max-w-xs">
-                输入你的问题，nomingbai 会基于常识库为你解答生活中的隐性常识。
+                输入你的问题，未言会基于常识库为你解答生活中的隐性常识。
               </p>
               <div className="w-full max-w-md">
                 <p className="text-xs text-gray-400 mb-2 flex items-center gap-1 justify-center">
@@ -238,7 +238,7 @@ export default function ChatPage() {
         <div className="pt-4 border-t border-gray-200 mt-2">
           <div className="flex items-center justify-between mb-2">
             <p className="text-[11px] text-gray-400">
-              nomingbai 的回答基于常识库，仅供参考
+              未言的回答基于常识库，仅供参考
             </p>
             <div className="flex items-center gap-3">
               {messages.length > 0 && (
