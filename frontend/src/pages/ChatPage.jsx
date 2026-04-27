@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { agentAPI } from '../api'
 import { useToast } from '../components/Toast'
 import { Send, Lightbulb, User, Bot, AlertTriangle, Copy, Check, RotateCcw } from 'lucide-react'
+import MarkdownText from '../components/MarkdownText'
 
 const EXAMPLES = [
   '一会儿代表多长时间？',
@@ -159,7 +160,7 @@ export default function ChatPage() {
                     : 'bg-gray-100 text-gray-800 rounded-bl-md'
                 }`}
               >
-                {msg.content}
+                {msg.role === 'user' ? msg.content : <MarkdownText text={msg.content} />}
                 <div className={`flex items-center justify-between gap-3 mt-1.5 ${msg.role === 'user' ? 'text-gray-400' : 'text-gray-400'}`}>
                   <span className="text-[10px]">
                     {msg.time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}

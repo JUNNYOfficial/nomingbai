@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { agentAPI } from '../api'
 import { History, ChevronLeft, ChevronRight, MessageSquare, Clock, Copy, Check } from 'lucide-react'
+import MarkdownText from '../components/MarkdownText'
 import { useToast } from '../components/Toast'
 
 export default function HistoryPage() {
@@ -82,9 +83,9 @@ export default function HistoryPage() {
                 {new Date(log.created_at).toLocaleDateString('zh-CN')}
               </span>
             </div>
-            <p className="text-sm text-gray-600 leading-relaxed line-clamp-3 whitespace-pre-wrap">
-              {log.response}
-            </p>
+            <div className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+              <MarkdownText text={log.response} />
+            </div>
             <button
               onClick={async () => {
                 try {
