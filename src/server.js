@@ -73,10 +73,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(staticDir));
 
-app.use("/api", indexRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/agent", agentRouter);
 app.use("/api/commonsense", commonsenseRouter);
+app.use("/api", indexRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // SPA fallback: serve index.html for non-API routes (only GET)
