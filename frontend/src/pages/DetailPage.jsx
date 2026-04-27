@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { commonsenseAPI } from '../api'
 import { ArrowLeft, Tag, AlertTriangle, BookOpen, Link2, Info, Star } from 'lucide-react'
+import { SkeletonDetail } from '../components/Skeleton'
 
 export default function DetailPage() {
+  useEffect(() => { document.title = '常识详情 — nomingbai' }, [])
   const { id } = useParams()
   const [item, setItem] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -27,8 +29,12 @@ export default function DetailPage() {
 
   if (loading) {
     return (
-      <div className="page-container max-w-2xl text-center py-16">
-        <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto" />
+      <div className="page-container max-w-2xl">
+        <div className="inline-flex items-center gap-1 text-sm text-gray-300 mb-6">
+          <ArrowLeft className="w-4 h-4" />
+          返回常识库
+        </div>
+        <SkeletonDetail />
       </div>
     )
   }

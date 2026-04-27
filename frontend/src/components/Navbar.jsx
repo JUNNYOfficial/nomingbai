@@ -14,7 +14,12 @@ export default function Navbar() {
     { to: '/history', label: '历史记录', icon: History },
   ]
 
-  const isActive = (path) => location.pathname === path
+  const isActive = (path) => {
+    if (path === '/') {
+      return location.pathname === '/' || location.pathname === '/chat'
+    }
+    return location.pathname === path
+  }
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
@@ -43,14 +48,20 @@ export default function Navbar() {
           </div>
 
           <div className="hidden sm:flex items-center gap-3">
-            {isLoggedIn ? (
+            {loading ? (
+              <div className="w-16 h-5 bg-gray-100 rounded animate-pulse" />
+            ) : isLoggedIn ? (
               <>
                 <span className="text-sm text-gray-500 flex items-center gap-1">
                   <User className="w-4 h-4" />
                   {user?.username}
                 </span>
                 <button
-                  onClick={logout}
+                  onClick={() => {
+                    if (confirm('确定要退出登录吗？')) {
+                      logout()
+                    }
+                  }}
                   className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
@@ -94,7 +105,12 @@ export default function Navbar() {
             <div className="pt-2 border-t border-gray-100">
               {isLoggedIn ? (
                 <button
-                  onClick={() => { logout(); setMenuOpen(false) }}
+                  onClick={() => {
+                    if (confirm('确定要退出登录吗？')) {
+                      logout()
+                      setMenuOpen(false)
+                    }
+                  }}
                   className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 w-full"
                 >
                   <LogOut className="w-4 h-4" />

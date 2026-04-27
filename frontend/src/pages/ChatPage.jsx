@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { agentAPI } from '../api'
-import { Send, Lightbulb, User, Bot, AlertTriangle } from 'lucide-react'
+import { useToast } from '../components/Toast'
+import { Send, Lightbulb, User, Bot, AlertTriangle, Copy, Check, RotateCcw } from 'lucide-react'
 
 const EXAMPLES = [
   '一会儿代表多长时间？',
@@ -12,15 +13,56 @@ const EXAMPLES = [
 ]
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState([])
+  useEffect(() => { document.title = '对话 — nomingbai' }, [])
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('nomingbai_chat')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return parsed.map(m => ({
+          ...m,
+          time: new Date(m.time)
+        }))
+      }
+    } catch { /* ignore */ }
+    return []
+  })
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [copiedIndex, setCopiedIndex] = useState(null)
+  const { addToast } = useToast()
   const bottomRef = useRef(null)
+  const inputRef = useRef(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) {
+        e.preventDefault()
+        clearChat()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [messages])
+
+  useEffect(() => {
+    localStorage.setItem('nomingbai_chat', JSON.stringify(
+      messages.map(m => ({
+        role: m.role,
+        content: m.content,
+        time: m.time.toISOString()
+      }))
+    ))
+  }, [messages])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -44,11 +86,20 @@ export default function ChatPage() {
       setMessages((prev) => [...prev, { role: 'error', content: msg, time: new Date() }])
     } finally {
       setLoading(false)
+      // 延迟聚焦，避免在 setState 同步期间操作 DOM
+      setTimeout(() => inputRef.current?.focus(), 0)
     }
   }
 
   const setExample = (text) => {
     setInput(text)
+  }
+
+  const clearChat = () => {
+    if (confirm('确定要清空当前对话吗？')) {
+      setMessages([])
+      localStorage.removeItem('nomingbai_chat')
+    }
   }
 
   return (
@@ -109,8 +160,51 @@ export default function ChatPage() {
                 }`}
               >
                 {msg.content}
-                <div className={`text-[10px] mt-1.5 ${msg.role === 'user' ? 'text-gray-400' : 'text-gray-400'}`}>
-                  {msg.time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                <div className={`flex items-center justify-between gap-3 mt-1.5 ${msg.role === 'user' ? 'text-gray-400' : 'text-gray-400'}`}>
+                  <span className="text-[10px]">
+                    {msg.time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                  {msg.role === 'assistant' && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(msg.content)
+                            setCopiedIndex(i)
+                            setTimeout(() => setCopiedIndex(null), 2000)
+                            addToast('回答已复制到剪贴板', 'success')
+                          } catch {
+                            addToast('复制失败，请手动复制', 'error')
+                          }
+                        }}
+                        className="inline-flex items-center gap-0.5 text-[10px] hover:text-gray-700 transition-colors"
+                        title="复制回答"
+                      >
+                        {copiedIndex === i ? (
+                          <>
+                            <Check className="w-3 h-3" />
+                            已复制
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3 h-3" />
+                            复制
+                          </>
+                        )}
+                      </button>
+                      {i > 0 && messages[i - 1].role === 'user' && (
+                        <button
+                          onClick={() => handleSubmit(null, messages[i - 1].content)}
+                          disabled={loading}
+                          className="inline-flex items-center gap-0.5 text-[10px] hover:text-gray-700 transition-colors disabled:opacity-40"
+                          title="重新生成"
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                          重新生成
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -141,8 +235,23 @@ export default function ChatPage() {
         </div>
 
         <div className="pt-4 border-t border-gray-200 mt-2">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[11px] text-gray-400">
+              nomingbai 的回答基于常识库，仅供参考
+            </p>
+            {messages.length > 0 && (
+              <button
+                type="button"
+                onClick={clearChat}
+                className="text-[11px] text-gray-400 hover:text-red-500 transition-colors"
+              >
+                清空对话
+              </button>
+            )}
+          </div>
           <form onSubmit={handleSubmit} className="flex gap-2">
             <input
+              ref={inputRef}
               type="text"
               className="input flex-1"
               placeholder="输入你的问题..."
@@ -158,9 +267,6 @@ export default function ChatPage() {
               <Send className="w-4 h-4" />
             </button>
           </form>
-          <p className="text-[11px] text-gray-400 mt-2 text-center">
-            nomingbai 的回答基于常识库，仅供参考
-          </p>
         </div>
       </div>
     </div>

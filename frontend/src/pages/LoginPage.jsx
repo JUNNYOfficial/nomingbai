@@ -1,17 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { authAPI } from '../api'
+import { useToast } from '../components/Toast'
 import { Bot, AlertCircle } from 'lucide-react'
 
 export default function LoginPage() {
+  useEffect(() => { document.title = mode === 'login' ? '登录 — nomingbai' : '注册 — nomingbai' }, [mode])
   const [mode, setMode] = useState('login')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const usernameRef = useRef(null)
   const navigate = useNavigate()
   const { login } = useAuth()
+  const { addToast } = useToast()
+
+  useEffect(() => {
+    usernameRef.current?.focus()
+  }, [mode])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -31,6 +39,7 @@ export default function LoginPage() {
     try {
       if (mode === 'register') {
         await authAPI.register(username.trim(), password)
+        addToast('注册成功，请登录', 'success')
         setMode('login')
         setError('')
         setLoading(false)
@@ -93,6 +102,7 @@ export default function LoginPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">用户名</label>
               <input
+                ref={usernameRef}
                 type="text"
                 className="input"
                 placeholder="输入用户名"

@@ -9,4 +9,8 @@ router.get("/", getHome);
 router.get("/status", getStatus);
 router.get("/data", getData);
 
+router.use((req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+
 module.exports = router;

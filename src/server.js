@@ -8,16 +8,40 @@ const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth");
 const agentRouter = require("./routes/agent");
 const commonsenseRouter = require("./routes/commonsense");
+const { initFromDatabase } = require("./services/commonsenseService");
 
 const app = express();
 const port = config.PORT || 3000;
+
+// Simple request logger
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
+  });
+  next();
+});
 
 const distDir = path.join(__dirname, "../frontend/dist");
 const publicDir = path.join(__dirname, "../public");
 const staticDir = require("fs").existsSync(distDir) ? distDir : publicDir;
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+}));
 
 app.use(cors({
   origin: config.CORS_ORIGIN,
@@ -57,8 +81,25 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(staticDir, "index.html"));
 });
 
-app.listen(port, () => {
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(`[Error] ${req.method} ${req.path}:`, err.message);
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(err.status || 500).json({
+    error: config.NODE_ENV === 'production' ? 'Internal server error' : err.message
+  });
+});
+
+app.listen(port, async () => {
   console.log(`nomingbai backend running at http://localhost:${port}`);
   console.log(`NODE_ENV=${config.NODE_ENV}, DATABASE_URL=${config.DATABASE_URL ? "configured" : "missing"}`);
   console.log(`Serving static files from: ${staticDir}`);
+
+  try {
+    await initFromDatabase();
+  } catch (error) {
+    console.warn("Failed to init commonsense from database:", error.message);
+  }
 });

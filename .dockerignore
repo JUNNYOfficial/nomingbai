@@ -1,10 +1,12 @@
 node_modules/
-.DS_Store
+frontend/node_modules/
+frontend/dist/
 .env
+.git/
+.gitignore
+.DS_Store
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 coverage/
-frontend/dist/
-dist/
-*.log
+*.md

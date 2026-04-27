@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { ArrowRight, Sparkles, BookOpen, Clock, Shield } from 'lucide-react'
+import { useEffect } from 'react'
 
 export default function HomePage() {
+  useEffect(() => { document.title = 'nomingbai — 解答生活中的隐性常识' }, [])
   const { isLoggedIn } = useAuth()
 
   return (

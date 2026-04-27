@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { commonsenseAPI } from '../api'
 import { Search, BookOpen, Tag, ChevronRight, Layers } from 'lucide-react'
+import { SkeletonCard } from '../components/Skeleton'
 
 export default function BrowsePage() {
+  useEffect(() => { document.title = '常识库 — nomingbai' }, [])
   const [items, setItems] = useState([])
   const [categories, setCategories] = useState([])
   const [activeCategory, setActiveCategory] = useState('')
@@ -12,23 +14,6 @@ export default function BrowsePage() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const limit = 12
-
-  const fetchItems = async () => {
-    setLoading(true)
-    try {
-      const params = { page, limit }
-      if (activeCategory) params.category = activeCategory
-      if (search.trim()) params.q = search.trim()
-
-      const res = await commonsenseAPI.list(params)
-      setItems(res.data.data || [])
-      setTotal(res.data.total || 0)
-    } catch (err) {
-      console.error('Failed to load commonsense:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const fetchCategories = async () => {
     try {
@@ -43,15 +28,65 @@ export default function BrowsePage() {
     fetchCategories()
   }, [])
 
+  // Unified fetch with latest state
   useEffect(() => {
-    fetchItems()
-  }, [activeCategory, page])
+    let cancelled = false
+    const doFetch = async () => {
+      setLoading(true)
+      try {
+        const params = { page, limit }
+        if (activeCategory) params.category = activeCategory
+        if (search.trim()) params.q = search.trim()
+
+        const res = await commonsenseAPI.list(params)
+        if (!cancelled) {
+          setItems(res.data.data || [])
+          setTotal(res.data.total || 0)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error('Failed to load commonsense:', err)
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    doFetch()
+    return () => { cancelled = true }
+  }, [page, activeCategory])
+
+  // Debounce search: reset page and fetch
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1)
+      // page change will trigger the fetch above
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [search])
+
+  const searchInputRef = useRef(null)
 
   const handleSearch = (e) => {
     e.preventDefault()
     setPage(1)
-    fetchItems()
+    // page change will trigger the fetch above
   }
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+      }
+      if (e.key === 'Escape') {
+        if (document.activeElement === searchInputRef.current) {
+          searchInputRef.current?.blur()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   return (
     <div className="page-container max-w-5xl">
@@ -65,9 +100,10 @@ export default function BrowsePage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
+            ref={searchInputRef}
             type="text"
             className="input pl-9"
-            placeholder="搜索常识..."
+            placeholder="搜索常识... 按 / 快速聚焦"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -106,8 +142,10 @@ export default function BrowsePage() {
       </div>
 
       {loading && items.length === 0 && (
-        <div className="text-center py-12">
-          <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto" />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
         </div>
       )}
 

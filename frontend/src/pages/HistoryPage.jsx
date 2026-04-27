@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react'
 import { agentAPI } from '../api'
-import { History, ChevronLeft, ChevronRight, MessageSquare, Clock } from 'lucide-react'
+import { History, ChevronLeft, ChevronRight, MessageSquare, Clock, Copy, Check } from 'lucide-react'
+import { useToast } from '../components/Toast'
 
 export default function HistoryPage() {
+  useEffect(() => { document.title = '历史记录 — nomingbai' }, [])
   const [logs, setLogs] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [copiedId, setCopiedId] = useState(null)
+  const { addToast } = useToast()
 
   const totalPages = Math.ceil(total / limit)
 
@@ -39,8 +43,20 @@ export default function HistoryPage() {
       </div>
 
       {loading && logs.length === 0 && (
-        <div className="text-center py-12">
-          <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto" />
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="card p-4 animate-pulse">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="h-4 w-2/3 bg-gray-200 rounded" />
+                <div className="h-3 w-16 bg-gray-200 rounded flex-shrink-0" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-3 w-full bg-gray-200 rounded" />
+                <div className="h-3 w-5/6 bg-gray-200 rounded" />
+                <div className="h-3 w-4/6 bg-gray-200 rounded" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -58,7 +74,7 @@ export default function HistoryPage() {
 
       <div className="space-y-3">
         {logs.map((log) => (
-          <div key={log.id} className="card p-4 hover:border-gray-300 transition-colors">
+          <div key={log.id} className="card p-4 hover:border-gray-300 transition-colors group">
             <div className="flex items-start justify-between gap-3 mb-2">
               <p className="text-sm font-medium text-gray-900 line-clamp-1">{log.prompt}</p>
               <span className="text-[11px] text-gray-400 flex items-center gap-1 flex-shrink-0">
@@ -69,6 +85,31 @@ export default function HistoryPage() {
             <p className="text-sm text-gray-600 leading-relaxed line-clamp-3 whitespace-pre-wrap">
               {log.response}
             </p>
+            <button
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(log.response)
+                  setCopiedId(log.id)
+                  setTimeout(() => setCopiedId(null), 2000)
+                  addToast('回答已复制到剪贴板', 'success')
+                } catch {
+                  addToast('复制失败，请手动复制', 'error')
+                }
+              }}
+              className="mt-2 inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-gray-700 transition-colors opacity-0 group-hover:opacity-100"
+            >
+              {copiedId === log.id ? (
+                <>
+                  <Check className="w-3 h-3" />
+                  已复制
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3" />
+                  复制回答
+                </>
+              )}
+            </button>
           </div>
         ))}
       </div>
