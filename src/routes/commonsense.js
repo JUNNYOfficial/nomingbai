@@ -1,10 +1,40 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Commonsense
+ *   description: 常识库接口
+ */
+
 const express = require("express");
 const { verifyToken } = require("../lib/auth");
 const commonsenseService = require("../services/commonsenseService");
 
 const router = express.Router();
 
-// GET /api/commonsense - 列表（支持分类、分页、搜索）
+/**
+ * @swagger
+ * /commonsense:
+ *   get:
+ *     summary: 常识列表
+ *     tags: [Commonsense]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *       - in: query
+ *         name: category
+ *         schema: { type: string }
+ *       - in: query
+ *         name: q
+ *         schema: { type: string }
+ *         description: 搜索关键词
+ *     responses:
+ *       200:
+ *         description: 返回常识列表
+ */
 router.get("/", async (req, res) => {
   try {
     const { category, page = 1, limit = 20, q } = req.query;
@@ -37,7 +67,16 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET /api/commonsense/categories - 分类列表
+/**
+ * @swagger
+ * /commonsense/categories:
+ *   get:
+ *     summary: 分类列表
+ *     tags: [Commonsense]
+ *     responses:
+ *       200:
+ *         description: 返回所有分类
+ */
 router.get("/categories", async (req, res) => {
   try {
     const categories = commonsenseService.getCategories();
@@ -47,7 +86,23 @@ router.get("/categories", async (req, res) => {
   }
 });
 
-// GET /api/commonsense/:id - 单条详情
+/**
+ * @swagger
+ * /commonsense/{id}:
+ *   get:
+ *     summary: 常识详情
+ *     tags: [Commonsense]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 返回单条常识详情
+ *       404:
+ *         description: 常识条目不存在
+ */
 router.get("/:id", async (req, res) => {
   try {
     const item = await commonsenseService.getCommonsenseById(req.params.id);
@@ -60,7 +115,36 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// POST /api/commonsense - 创建（需登录）
+/**
+ * @swagger
+ * /commonsense:
+ *   post:
+ *     summary: 创建常识（需登录）
+ *     tags: [Commonsense]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               category: { type: string }
+ *               question: { type: string }
+ *               answer: { type: string }
+ *               trap: { type: string }
+ *               context: { type: string }
+ *               related: { type: array, items: { type: string } }
+ *               source: { type: string }
+ *               difficulty: { type: string, enum: [easy, medium, hard] }
+ *               tags: { type: array, items: { type: string } }
+ *     responses:
+ *       201:
+ *         description: 创建成功
+ *       401:
+ *         description: 未登录
+ */
 router.post("/", verifyToken, async (req, res) => {
   try {
     const item = await commonsenseService.createCommonsense(req.body);
@@ -70,7 +154,27 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
-// PUT /api/commonsense/:id - 更新（需登录）
+/**
+ * @swagger
+ * /commonsense/{id}:
+ *   put:
+ *     summary: 更新常识（需登录）
+ *     tags: [Commonsense]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 更新成功
+ *       401:
+ *         description: 未登录
+ *       404:
+ *         description: 常识条目不存在
+ */
 router.put("/:id", verifyToken, async (req, res) => {
   try {
     const item = await commonsenseService.updateCommonsense(req.params.id, req.body);
@@ -83,7 +187,27 @@ router.put("/:id", verifyToken, async (req, res) => {
   }
 });
 
-// DELETE /api/commonsense/:id - 删除（需登录）
+/**
+ * @swagger
+ * /commonsense/{id}:
+ *   delete:
+ *     summary: 删除常识（需登录）
+ *     tags: [Commonsense]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 删除成功
+ *       401:
+ *         description: 未登录
+ *       404:
+ *         description: 常识条目不存在
+ */
 router.delete("/:id", verifyToken, async (req, res) => {
   try {
     await commonsenseService.deleteCommonsense(req.params.id);

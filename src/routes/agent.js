@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Agent
+ *   description: Agent 对话接口
+ */
+
 const express = require("express");
 const { verifyToken } = require("../lib/auth");
 const { invokeAgent } = require("../services/agentService");
@@ -5,6 +12,28 @@ const db = require("../lib/database");
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /agent/invoke:
+ *   post:
+ *     summary: 调用 Agent
+ *     tags: [Agent]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               prompt: { type: string }
+ *     responses:
+ *       200:
+ *         description: 返回 Agent 回答
+ *       401:
+ *         description: 未登录
+ */
 router.post("/invoke", verifyToken, async (req, res) => {
   try {
     const { prompt } = req.body;
@@ -19,7 +48,27 @@ router.post("/invoke", verifyToken, async (req, res) => {
   }
 });
 
-// GET /api/agent/history - 查询当前用户的对话历史
+/**
+ * @swagger
+ * /agent/history:
+ *   get:
+ *     summary: 对话历史
+ *     tags: [Agent]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *     responses:
+ *       200:
+ *         description: 返回对话历史列表
+ *       401:
+ *         description: 未登录
+ */
 router.get("/history", verifyToken, async (req, res) => {
   try {
     if (!db.isConfigured()) {

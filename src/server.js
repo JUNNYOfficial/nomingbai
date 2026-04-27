@@ -9,6 +9,8 @@ const authRouter = require("./routes/auth");
 const agentRouter = require("./routes/agent");
 const commonsenseRouter = require("./routes/commonsense");
 const { initFromDatabase } = require("./services/commonsenseService");
+const swaggerSpec = require("./config/swagger");
+const swaggerUi = require("swagger-ui-express");
 
 const app = express();
 const port = config.PORT || 3000;
@@ -75,6 +77,7 @@ app.use("/api", indexRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/agent", agentRouter);
 app.use("/api/commonsense", commonsenseRouter);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // SPA fallback: serve index.html for non-API routes (only GET)
 app.get("*", (req, res) => {

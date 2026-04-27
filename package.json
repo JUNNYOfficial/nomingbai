@@ -9,7 +9,8 @@
     "build": "cd frontend && npm run build",
     "dev:frontend": "cd frontend && npm run dev",
     "test": "node --test src/tests/*.test.js",
-    "migrate": "node scripts/migrate-json-to-db.js"
+    "migrate": "node scripts/migrate-json-to-db.js",
+    "backup": "node scripts/backup-db-to-json.js"
   },
   "keywords": [
     "web",
@@ -27,6 +28,8 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.1",
     "mysql2": "^3.6.1",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }
