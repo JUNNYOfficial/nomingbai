@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
 import { authAPI } from '../api'
 import { useToast } from '../components/Toast'
-import { Bot, ArrowRight, AlertCircle, BookOpen } from 'lucide-react'
+import { Bot, ArrowRight, AlertCircle, BookOpen, Check } from 'lucide-react'
 
-export default function LoginPage() {
-  useEffect(() => { document.title = '登录 — nomingbai' }, [])
+export default function RegisterPage() {
+  useEffect(() => { document.title = '注册 — nomingbai' }, [])
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -14,7 +13,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const usernameRef = useRef(null)
   const navigate = useNavigate()
-  const { login } = useAuth()
   const { addToast } = useToast()
 
   useEffect(() => {
@@ -30,18 +28,28 @@ export default function LoginPage() {
       return
     }
 
+    if (password.length < 6) {
+      setError('密码长度至少为 6 位')
+      return
+    }
+
     setLoading(true)
     try {
-      const res = await authAPI.login(username.trim(), password)
-      login(res.data.token, res.data.username)
-      addToast('登录成功', 'success')
-      navigate('/chat')
+      await authAPI.register(username.trim(), password)
+      addToast('注册成功，请登录', 'success')
+      navigate('/login')
     } catch (err) {
-      setError(err.response?.data?.error || '登录失败，请稍后重试')
+      setError(err.response?.data?.error || '注册失败，请稍后重试')
     } finally {
       setLoading(false)
     }
   }
+
+  const features = [
+    '52 条日常生活常识',
+    '智能语义理解',
+    '认知陷阱提醒',
+  ]
 
   return (
     <div className="min-h-screen flex">
@@ -56,20 +64,24 @@ export default function LoginPage() {
 
         <div className="relative z-10 max-w-md">
           <h2 className="text-3xl font-bold mb-4 leading-tight">
-            解答生活中的<br />隐性常识
+            开始探索<br />隐性常识
           </h2>
-          <p className="text-gray-400 leading-relaxed">
-            从时间语义到社交礼仪，从消费陷阱到生活避险，
-            nomingbai 帮你理解那些"明明应该知道却没人教"的事情。
+          <p className="text-gray-400 leading-relaxed mb-6">
+            创建一个账号，解锁与常识 Agent 的完整对话体验，
+            保存你的提问历史，随时回顾。
           </p>
+          <div className="space-y-3">
+            {features.map((f) => (
+              <div key={f} className="flex items-center gap-2 text-sm text-gray-300">
+                <Check className="w-4 h-4 text-gray-500" />
+                {f}
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="relative z-10 flex items-center gap-6 text-sm text-gray-500">
-          <div className="flex items-center gap-1.5">
-            <BookOpen className="w-4 h-4" />
-            <span>52 条常识</span>
-          </div>
-          <div>8 大类别</div>
+        <div className="relative z-10 text-sm text-gray-500">
+          已有 52 条常识覆盖 8 大生活场景
         </div>
 
         {/* Decorative circles */}
@@ -81,8 +93,8 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
         <div className="w-full max-w-sm">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">欢迎回来</h1>
-            <p className="text-sm text-gray-500">登录以继续与常识 Agent 对话</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">创建账号</h1>
+            <p className="text-sm text-gray-500">注册以开始与常识 Agent 对话</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -114,8 +126,9 @@ export default function LoginPage() {
                 placeholder="输入密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
+                autoComplete="new-password"
               />
+              <p className="text-xs text-gray-400 mt-1.5">密码长度需在 6-128 位之间</p>
             </div>
 
             <button
@@ -126,11 +139,11 @@ export default function LoginPage() {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  登录中...
+                  注册中...
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
-                  登录
+                  注册
                   <ArrowRight className="w-4 h-4" />
                 </span>
               )}
@@ -138,9 +151,9 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center text-sm text-gray-500">
-            还没有账号？
-            <Link to="/register" className="text-gray-900 font-medium hover:underline ml-1">
-              立即注册
+            已有账号？
+            <Link to="/login" className="text-gray-900 font-medium hover:underline ml-1">
+              直接登录
             </Link>
           </div>
 
