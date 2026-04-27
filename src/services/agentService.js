@@ -1,4 +1,5 @@
 const db = require("../lib/database");
+const logger = require("../lib/logger");
 const { searchCommonsense, getRandomCommonsense } = require("./commonsenseService");
 const { classifyIntent, searchAgentData, formatConversationResponse } = require("./agentDataService");
 
@@ -19,7 +20,7 @@ async function invokeAgent(user, prompt) {
     try {
       await saveAgentLog(user, prompt, response.output);
     } catch (error) {
-      console.warn("Agent log save failed:", error.message);
+      logger.warn("Agent log save failed: " + error.message);
     }
   }
 

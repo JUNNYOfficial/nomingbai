@@ -139,21 +139,21 @@ export default function AdminPage() {
   return (
     <div className="page-container max-w-6xl">
       <div className="flex items-center gap-2 mb-6">
-        <Database className="w-5 h-5 text-gray-700" />
-        <h1 className="text-xl font-bold text-gray-900">常识库管理</h1>
+        <Database className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">常识库管理</h1>
         <span className="text-sm text-gray-400 ml-auto">共 {stats.total} 条</span>
       </div>
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         <div className="card p-4">
-          <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-          <div className="text-xs text-gray-500 mt-1">总条目</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.total}</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">总条目</div>
         </div>
         {categories.map((cat) => (
           <div key={cat} className="card p-4">
-            <div className="text-2xl font-bold text-gray-900">{stats.byCategory[cat] || 0}</div>
-            <div className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.byCategory[cat] || 0}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
               <Tag className="w-3 h-3" />
               {cat}
             </div>
@@ -182,10 +182,10 @@ export default function AdminPage() {
       {/* Form modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-white dark:bg-gray-950 rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold">{editingItem?.id ? '编辑常识' : '新增常识'}</h2>
-              <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -258,13 +258,13 @@ export default function AdminPage() {
       {/* Table */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto" />
+          <div className="w-8 h-8 border-2 border-gray-200 dark:border-gray-800 border-t-gray-900 rounded-full animate-spin mx-auto" />
         </div>
       ) : (
         <>
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-gray-600">
+              <thead className="bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium">ID</th>
                   <th className="px-4 py-3 text-left font-medium">分类</th>
@@ -275,10 +275,10 @@ export default function AdminPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {items.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-gray-500 font-mono text-xs">{item.id}</td>
+                  <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 font-mono text-xs">{item.id}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300">
                         {item.category}
                       </span>
                     </td>
@@ -287,7 +287,7 @@ export default function AdminPage() {
                       {item.difficulty === 'easy' ? '⭐' : item.difficulty === 'hard' ? '⭐⭐⭐' : '⭐⭐'}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button onClick={() => startEdit(item)} className="text-gray-400 hover:text-gray-700 mr-2">
+                      <button onClick={() => startEdit(item)} className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mr-2">
                         <Edit3 className="w-4 h-4" />
                       </button>
                       <button onClick={() => handleDelete(item.id)} className="text-gray-400 hover:text-red-500">
@@ -301,8 +301,8 @@ export default function AdminPage() {
             {items.length === 0 && (
               <div className="text-center py-12">
                 <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500 text-sm mb-3">暂无数据</p>
-                <button onClick={startCreate} className="text-sm text-gray-900 hover:underline inline-flex items-center gap-1">
+                <p className="text-gray-500 dark:text-gray-400 text-sm mb-3">暂无数据</p>
+                <button onClick={startCreate} className="text-sm text-gray-900 dark:text-gray-100 hover:underline inline-flex items-center gap-1">
                   <Plus className="w-4 h-4" />
                   创建第一条常识
                 </button>

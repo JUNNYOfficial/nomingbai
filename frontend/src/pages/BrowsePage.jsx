@@ -91,8 +91,8 @@ export default function BrowsePage() {
   return (
     <div className="page-container max-w-5xl">
       <div className="flex items-center gap-2 mb-6">
-        <BookOpen className="w-5 h-5 text-gray-700" />
-        <h1 className="text-xl font-bold text-gray-900">常识库</h1>
+        <BookOpen className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">常识库</h1>
         <span className="text-sm text-gray-400 ml-auto">共 {total} 条</span>
       </div>
 
@@ -119,7 +119,7 @@ export default function BrowsePage() {
           className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
             !activeCategory
               ? 'bg-gray-900 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
           }`}
         >
           <Layers className="w-3 h-3" />
@@ -132,7 +132,7 @@ export default function BrowsePage() {
             className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               activeCategory === cat
                 ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
             }`}
           >
             <Tag className="w-3 h-3" />
@@ -152,7 +152,7 @@ export default function BrowsePage() {
       {!loading && items.length === 0 && (
         <div className="text-center py-16">
           <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">暂无数据</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">暂无数据</p>
         </div>
       )}
 
@@ -164,7 +164,7 @@ export default function BrowsePage() {
             className="card p-4 hover:border-gray-300 transition-colors group"
           >
             <div className="flex items-start justify-between gap-2 mb-2">
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300">
                 {item.category}
               </span>
               {item.difficulty && (
@@ -173,13 +173,13 @@ export default function BrowsePage() {
                 </span>
               )}
             </div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-gray-700 transition-colors">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
               {item.question}
             </h3>
-            <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 line-clamp-3 leading-relaxed">
               {item.answer}
             </p>
-            <div className="flex items-center gap-1 mt-3 text-[11px] text-gray-400 group-hover:text-gray-600 transition-colors">
+            <div className="flex items-center gap-1 mt-3 text-[11px] text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
               查看详情 <ChevronRight className="w-3 h-3" />
             </div>
           </Link>

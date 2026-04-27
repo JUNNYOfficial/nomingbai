@@ -90,11 +90,11 @@ export default function RegisterPage() {
       </div>
 
       {/* Right form panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white dark:bg-gray-950">
         <div className="w-full max-w-sm">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">创建账号</h1>
-            <p className="text-sm text-gray-500">注册以开始与常识 Agent 对话</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">创建账号</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">注册以开始与常识 Agent 对话</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -106,7 +106,7 @@ export default function RegisterPage() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">用户名</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">用户名</label>
               <input
                 ref={usernameRef}
                 type="text"
@@ -119,7 +119,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">密码</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">密码</label>
               <input
                 type="password"
                 className="input"
@@ -152,13 +152,13 @@ export default function RegisterPage() {
 
           <div className="mt-6 text-center text-sm text-gray-500">
             已有账号？
-            <Link to="/login" className="text-gray-900 font-medium hover:underline ml-1">
+            <Link to="/login" className="text-gray-900 dark:text-gray-100 font-medium hover:underline ml-1">
               直接登录
             </Link>
           </div>
 
-          <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-            <Link to="/browse" className="text-sm text-gray-400 hover:text-gray-700 transition-colors inline-flex items-center gap-1">
+          <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 text-center">
+            <Link to="/browse" className="text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors inline-flex items-center gap-1">
               <BookOpen className="w-3.5 h-3.5" />
               不登录，直接浏览常识库
             </Link>

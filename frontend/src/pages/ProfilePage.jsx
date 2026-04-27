@@ -67,9 +67,9 @@ export default function ProfilePage() {
     return (
       <div className="page-container max-w-xl">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-100 rounded w-1/3" />
-          <div className="h-32 bg-gray-100 rounded" />
-          <div className="h-48 bg-gray-100 rounded" />
+          <div className="h-8 bg-gray-100 dark:bg-gray-900 rounded w-1/3" />
+          <div className="h-32 bg-gray-100 dark:bg-gray-900 rounded" />
+          <div className="h-48 bg-gray-100 dark:bg-gray-900 rounded" />
         </div>
       </div>
     )
@@ -77,26 +77,26 @@ export default function ProfilePage() {
 
   return (
     <div className="page-container max-w-xl">
-      <h1 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+      <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
         <User className="w-5 h-5" />
         个人资料
       </h1>
 
       <div className="card p-5 mb-6">
-        <h2 className="text-sm font-semibold text-gray-700 mb-4">基本信息</h2>
+        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">基本信息</h2>
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <User className="w-4 h-4 text-gray-400" />
-            <span className="text-sm text-gray-500 w-16">用户名</span>
-            <span className="text-sm text-gray-900 font-medium">{profile?.username || user?.username}</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 w-16">用户名</span>
+            <span className="text-sm text-gray-900 dark:text-gray-100 font-medium">{profile?.username || user?.username}</span>
           </div>
           <div className="flex items-center gap-3">
             <Shield className="w-4 h-4 text-gray-400" />
-            <span className="text-sm text-gray-500 w-16">角色</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 w-16">角色</span>
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
               profile?.role === 'admin'
                 ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-600'
+                : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300'
             }`}>
               {profile?.role === 'admin' ? '管理员' : '普通用户'}
             </span>
@@ -104,8 +104,8 @@ export default function ProfilePage() {
           {profile?.created_at && (
             <div className="flex items-center gap-3">
               <Calendar className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-500 w-16">注册时间</span>
-              <span className="text-sm text-gray-900">
+              <span className="text-sm text-gray-500 dark:text-gray-400 w-16">注册时间</span>
+              <span className="text-sm text-gray-900 dark:text-gray-100">
                 {new Date(profile.created_at).toLocaleString('zh-CN')}
               </span>
             </div>
@@ -114,7 +114,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="card p-5">
-        <h2 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
           <KeyRound className="w-4 h-4" />
           修改密码
         </h2>
@@ -130,7 +130,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => setShowCurrent((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
               {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -146,7 +146,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => setShowNew((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
               {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>

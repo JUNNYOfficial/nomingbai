@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const db = require("../lib/database");
+const logger = require("../lib/logger");
 
 let commonsenseData = null;
 
@@ -31,12 +32,12 @@ function loadCommonsenseData() {
       const data = JSON.parse(fs.readFileSync(mainDb, "utf8"));
       if (Array.isArray(data)) {
         commonsenseData = data;
-        console.log(`Loaded ${data.length} commonsense items from commonsense_database.json`);
+        logger.info("Loaded " + data.length + " commonsense items from commonsense_database.json");
       } else {
-        console.warn("commonsense_database.json is not an array");
+        logger.warn("commonsense_database.json is not an array");
       }
     } catch (error) {
-      console.warn("Failed to load commonsense_database.json:", error.message);
+      logger.warn("Failed to load commonsense_database.json: " + error.message);
     }
   } else {
     // Fallback to legacy individual files
@@ -53,7 +54,7 @@ function loadCommonsenseData() {
           const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
           commonsenseData.push(...data);
         } catch (error) {
-          console.warn(`Failed to load ${file}:`, error.message);
+          logger.warn("Failed to load " + file + ": " + error.message);
         }
       }
     }
@@ -118,7 +119,7 @@ async function initFromDatabase() {
     const rows = await db.query("SELECT * FROM commonsense ORDER BY id");
     if (rows.length > 0) {
       commonsenseData = rows.map(parseRow);
-      console.log(`Loaded ${rows.length} commonsense items from database`);
+      logger.info("Loaded " + rows.length + " commonsense items from database");
       return;
     }
 
@@ -135,10 +136,10 @@ async function initFromDatabase() {
         );
       }
       commonsenseData = jsonData;
-      console.log(`Synced ${jsonData.length} commonsense items from JSON to database`);
+      logger.info("Synced " + jsonData.length + " commonsense items from JSON to database");
     }
   } catch (error) {
-    console.warn("Failed to init commonsense from database:", error.message);
+    logger.warn("Failed to init commonsense from database: " + error.message);
   }
 }
 

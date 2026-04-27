@@ -1,10 +1,12 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { Bot, BookOpen, History, User, LogOut, Menu, X, Settings } from 'lucide-react'
+import { useTheme } from './ThemeProvider'
+import { Bot, BookOpen, History, User, LogOut, Menu, X, Settings, Moon, Sun } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Navbar() {
   const { user, isLoggedIn, logout, loading, isAdmin } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -22,7 +24,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           <Link to="/" className="flex items-center gap-2 text-gray-900 font-semibold text-lg tracking-tight">
@@ -73,6 +75,13 @@ export default function Navbar() {
                   <User className="w-4 h-4" />
                   {user?.username}
                 </Link>
+                <button
+                  onClick={toggleTheme}
+                  className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+                  title={theme === 'dark' ? '切换亮色模式' : '切换暗色模式'}
+                >
+                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </button>
                 <button
                   onClick={() => {
                     if (confirm('确定要退出登录吗？')) {

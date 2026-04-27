@@ -4,6 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const config = require("./config");
+const logger = require("./lib/logger");
 const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth");
 const agentRouter = require("./routes/agent");
@@ -24,7 +25,7 @@ app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
+    logger.info(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
   });
   next();
 });
@@ -126,7 +127,7 @@ app.get("*", (req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error(`[Error] ${req.method} ${req.path}:`, err.message);
+  logger.error(`${req.method} ${req.path}: ${err.message}`, { stack: err.stack });
   if (res.headersSent) {
     return next(err);
   }
@@ -136,14 +137,14 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, async () => {
-  console.log(`nomingbai backend running at http://localhost:${port}`);
-  console.log(`NODE_ENV=${config.NODE_ENV}, DATABASE_URL=${config.DATABASE_URL ? "configured" : "missing"}`);
-  console.log(`Landing page: ${require("fs").existsSync(appDist) ? appDist : "not built"}`);
-  console.log(`App frontend: ${require("fs").existsSync(frontendDist) ? frontendDist : "not built"}`);
+  logger.info(`nomingbai backend running at http://localhost:${port}`);
+  logger.info(`NODE_ENV=${config.NODE_ENV}, DATABASE_URL=${config.DATABASE_URL ? "configured" : "missing"}`);
+  logger.info(`Landing page: ${require("fs").existsSync(appDist) ? appDist : "not built"}`);
+  logger.info(`App frontend: ${require("fs").existsSync(frontendDist) ? frontendDist : "not built"}`);
 
   try {
     await initFromDatabase();
   } catch (error) {
-    console.warn("Failed to init commonsense from database:", error.message);
+    logger.warn("Failed to init commonsense from database: " + error.message);
   }
 });

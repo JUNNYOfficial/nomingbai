@@ -38,8 +38,8 @@ export default function HistoryPage() {
   return (
     <div className="page-container max-w-3xl">
       <div className="flex items-center gap-2 mb-6">
-        <History className="w-5 h-5 text-gray-700" />
-        <h1 className="text-xl font-bold text-gray-900">对话历史</h1>
+        <History className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">对话历史</h1>
         <span className="text-sm text-gray-400 ml-auto">共 {total} 条</span>
       </div>
 
@@ -48,13 +48,13 @@ export default function HistoryPage() {
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="card p-4 animate-pulse">
               <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="h-4 w-2/3 bg-gray-200 rounded" />
-                <div className="h-3 w-16 bg-gray-200 rounded flex-shrink-0" />
+                <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-800 rounded" />
+                <div className="h-3 w-16 bg-gray-200 dark:bg-gray-800 rounded flex-shrink-0" />
               </div>
               <div className="space-y-2">
-                <div className="h-3 w-full bg-gray-200 rounded" />
-                <div className="h-3 w-5/6 bg-gray-200 rounded" />
-                <div className="h-3 w-4/6 bg-gray-200 rounded" />
+                <div className="h-3 w-full bg-gray-200 dark:bg-gray-800 rounded" />
+                <div className="h-3 w-5/6 bg-gray-200 dark:bg-gray-800 rounded" />
+                <div className="h-3 w-4/6 bg-gray-200 dark:bg-gray-800 rounded" />
               </div>
             </div>
           ))}
@@ -68,7 +68,7 @@ export default function HistoryPage() {
       {!loading && logs.length === 0 && !error && (
         <div className="text-center py-16">
           <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">暂无对话记录</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">暂无对话记录</p>
           <p className="text-gray-400 text-xs mt-1">开始与 Agent 对话后，记录会出现在这里</p>
         </div>
       )}
@@ -77,13 +77,13 @@ export default function HistoryPage() {
         {logs.map((log) => (
           <div key={log.id} className="card p-4 hover:border-gray-300 transition-colors group">
             <div className="flex items-start justify-between gap-3 mb-2">
-              <p className="text-sm font-medium text-gray-900 line-clamp-1">{log.prompt}</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-1">{log.prompt}</p>
               <span className="text-[11px] text-gray-400 flex items-center gap-1 flex-shrink-0">
                 <Clock className="w-3 h-3" />
                 {new Date(log.created_at).toLocaleDateString('zh-CN')}
               </span>
             </div>
-            <div className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+            <div className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300 leading-relaxed line-clamp-3">
               <MarkdownText text={log.response} />
             </div>
             <button
@@ -97,7 +97,7 @@ export default function HistoryPage() {
                   addToast('复制失败，请手动复制', 'error')
                 }
               }}
-              className="mt-2 inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-gray-700 transition-colors opacity-0 group-hover:opacity-100"
+              className="mt-2 inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors opacity-0 group-hover:opacity-100"
             >
               {copiedId === log.id ? (
                 <>

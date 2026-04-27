@@ -28,7 +28,10 @@ export default function ChatPage() {
     } catch { /* ignore */ }
     return []
   })
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState(() => {
+    try { return localStorage.getItem('nomingbai_chat_draft') || '' }
+    catch { return '' }
+  })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copiedIndex, setCopiedIndex] = useState(null)
@@ -70,7 +73,10 @@ export default function ChatPage() {
 
     const userMsg = regeneratePrompt || input.trim()
     if (!userMsg || loading) return
-    if (!regeneratePrompt) setInput('')
+    if (!regeneratePrompt) {
+      setInput('')
+      localStorage.removeItem('nomingbai_chat_draft')
+    }
     setError('')
 
     // For regenerate, remove the previous assistant message and its preceding user message
@@ -107,6 +113,7 @@ export default function ChatPage() {
 
   const setExample = (text) => {
     setInput(text)
+    localStorage.setItem('nomingbai_chat_draft', text)
   }
 
   const clearChat = () => {
@@ -141,11 +148,11 @@ export default function ChatPage() {
         <div className="flex-1 overflow-y-auto scrollbar-thin space-y-4 pr-1">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-                <Bot className="w-8 h-8 text-gray-700" />
+              <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-900 flex items-center justify-center mb-4">
+                <Bot className="w-8 h-8 text-gray-700 dark:text-gray-300" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">开始对话</h2>
-              <p className="text-sm text-gray-500 mb-6 max-w-xs">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">开始对话</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-xs">
                 输入你的问题，未言会基于常识库为你解答生活中的隐性常识。
               </p>
               <div className="w-full max-w-md">
@@ -158,7 +165,7 @@ export default function ChatPage() {
                     <button
                       key={ex}
                       onClick={() => setExample(ex)}
-                      className="px-3 py-1.5 text-xs bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors"
+                      className="px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                     >
                       {ex}
                     </button>
@@ -189,7 +196,7 @@ export default function ChatPage() {
                     ? 'bg-gray-900 text-white rounded-br-md'
                     : msg.role === 'error'
                     ? 'bg-red-50 text-red-700 border border-red-100 rounded-bl-md'
-                    : 'bg-gray-100 text-gray-800 rounded-bl-md'
+                    : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 rounded-bl-md'
                 }`}
               >
                 {msg.role === 'user' ? msg.content : <MarkdownText text={msg.content} />}
@@ -210,7 +217,7 @@ export default function ChatPage() {
                             addToast('复制失败，请手动复制', 'error')
                           }
                         }}
-                        className="inline-flex items-center gap-0.5 text-[10px] hover:text-gray-700 transition-colors"
+                        className="inline-flex items-center gap-0.5 text-[10px] hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                         title="复制回答"
                       >
                         {copiedIndex === i ? (
@@ -229,7 +236,7 @@ export default function ChatPage() {
                         <button
                           onClick={() => handleSubmit(null, messages[i - 1].content)}
                           disabled={loading}
-                          className="inline-flex items-center gap-0.5 text-[10px] hover:text-gray-700 transition-colors disabled:opacity-40"
+                          className="inline-flex items-center gap-0.5 text-[10px] hover:text-gray-700 dark:hover:text-gray-300 transition-colors disabled:opacity-40"
                           title="重新生成"
                         >
                           <RotateCcw className="w-3 h-3" />
@@ -242,8 +249,8 @@ export default function ChatPage() {
               </div>
 
               {msg.role === 'user' && (
-                <div className="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <User className="w-4 h-4 text-gray-600" />
+                <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <User className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                 </div>
               )}
             </div>
@@ -254,7 +261,7 @@ export default function ChatPage() {
               <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0">
                 <Bot className="w-4 h-4 text-white" />
               </div>
-              <div className="bg-gray-100 rounded-2xl rounded-bl-md px-4 py-3">
+              <div className="bg-gray-100 dark:bg-gray-900 rounded-2xl rounded-bl-md px-4 py-3">
                 <div className="flex gap-1">
                   <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -267,7 +274,7 @@ export default function ChatPage() {
           <div ref={bottomRef} />
         </div>
 
-        <div className="pt-4 border-t border-gray-200 mt-2">
+        <div className="pt-4 border-t border-gray-200 dark:border-gray-800 mt-2">
           <div className="flex items-center justify-between mb-2">
             <p className="text-[11px] text-gray-400">
               未言的回答基于常识库，仅供参考
@@ -301,7 +308,10 @@ export default function ChatPage() {
               className="input flex-1"
               placeholder="输入你的问题..."
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value)
+                localStorage.setItem('nomingbai_chat_draft', e.target.value)
+              }}
               disabled={loading}
             />
             <button

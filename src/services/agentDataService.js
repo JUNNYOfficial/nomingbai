@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const logger = require("../lib/logger");
 
 let intentData = null;
 let workData = null;
@@ -11,14 +12,14 @@ const DATA_DIR = path.join(__dirname, "../../Kimi-Agent");
 function loadJSON(filename) {
   const filePath = path.join(DATA_DIR, filename);
   if (!fs.existsSync(filePath)) {
-    console.warn(`Agent data file not found: ${filePath}`);
+    logger.warn("Agent data file not found: " + filePath);
     return [];
   }
   try {
     const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
     return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.warn(`Failed to load ${filename}:`, error.message);
+    logger.warn("Failed to load " + filename + ": " + error.message);
     return [];
   }
 }
@@ -31,8 +32,8 @@ function loadAllData() {
   socialData = loadJSON("social_agent_data.json");
   masterData = loadJSON("master_agent_data.json");
 
-  console.log(
-    `Loaded agent data: intents=${intentData.length}, work=${workData.length}, social=${socialData.length}, master=${masterData.length}`
+  logger.info(
+    "Loaded agent data: intents=" + intentData.length + ", work=" + workData.length + ", social=" + socialData.length + ", master=" + masterData.length
   );
 }
 

@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import PrivateRoute from './components/PrivateRoute'
 import AdminRoute from './components/AdminRoute'
+import KeyboardShortcuts from './components/KeyboardShortcuts'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -19,9 +20,10 @@ function Layout() {
   const hideNav = ['/login', '/register'].includes(location.pathname)
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
       <ScrollToTop />
       {!hideNav && <Navbar />}
+      <KeyboardShortcuts />
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />

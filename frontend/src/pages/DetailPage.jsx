@@ -44,7 +44,7 @@ export default function DetailPage() {
       <div className="page-container max-w-2xl">
         <div className="p-4 rounded-lg bg-red-50 text-red-600 text-sm text-center">{error}</div>
         <div className="text-center mt-4">
-          <Link to="/browse" className="text-sm text-gray-500 hover:text-gray-900">← 返回常识库</Link>
+          <Link to="/browse" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">← 返回常识库</Link>
         </div>
       </div>
     )
@@ -62,7 +62,7 @@ export default function DetailPage() {
     <div className="page-container max-w-2xl">
       <Link
         to="/browse"
-        className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
+        className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         返回常识库
@@ -70,21 +70,21 @@ export default function DetailPage() {
 
       <div className="card">
         <div className="flex items-start justify-between gap-3 mb-4">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 text-gray-700 text-xs font-medium">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-xs font-medium">
             <BookOpen className="w-3 h-3" />
             {item.category}
           </span>
           {item.difficulty && (
-            <span className="flex items-center gap-1 text-xs text-gray-500" title="难度">
+            <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400" title="难度">
               <Star className="w-3 h-3" />
               {difficultyStars[item.difficulty] || item.difficulty}
             </span>
           )}
         </div>
 
-        <h1 className="text-xl font-bold text-gray-900 mb-4">{item.question}</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">{item.question}</h1>
 
-        <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap mb-6">
+        <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap mb-6">
           {item.answer}
         </div>
 
@@ -115,7 +115,7 @@ export default function DetailPage() {
               {item.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 rounded bg-gray-100 text-gray-600 text-xs"
+                  className="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300 text-xs"
                 >
                   {tag}
                 </span>
@@ -131,7 +131,7 @@ export default function DetailPage() {
               {item.related.map((rel) => (
                 <span
                   key={rel}
-                  className="px-2 py-0.5 rounded bg-gray-50 text-gray-500 text-xs border border-gray-100"
+                  className="px-2 py-0.5 rounded bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 text-xs border border-gray-100 dark:border-gray-800"
                 >
                   {rel}
                 </span>
@@ -141,7 +141,7 @@ export default function DetailPage() {
         )}
 
         {item.source && (
-          <p className="text-xs text-gray-400 mt-4 pt-4 border-t border-gray-100">
+          <p className="text-xs text-gray-400 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
             来源：{item.source}
           </p>
         )}
