@@ -1,0 +1,876 @@
+[
+  {
+    "id": "intent_001",
+    "agent_type": "职场Agent",
+    "intent": "工作汇报求助",
+    "user_queries": [
+      "明天要跟领导汇报项目进度，不知道怎么说比较好",
+      "怎么跟老板汇报工作才能显得专业",
+      "季度总结汇报有什么技巧吗"
+    ],
+    "keywords": [
+      "汇报",
+      "领导",
+      "进度",
+      "总结"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_002",
+    "agent_type": "职场Agent",
+    "intent": "会议发言技巧",
+    "user_queries": [
+      "开会的时候总是不敢发言怎么办",
+      "会议上突然被cue到怎么回应",
+      "怎么在会上提出自己的想法"
+    ],
+    "keywords": [
+      "会议",
+      "发言",
+      "开会",
+      "表态"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_003",
+    "agent_type": "职场Agent",
+    "intent": "领导关系处理",
+    "user_queries": [
+      "领导总是下班才布置任务怎么办",
+      "怎么跟直属上司相处比较好",
+      "老板好像对我不满意该怎么改善"
+    ],
+    "keywords": [
+      "领导",
+      "老板",
+      "上司",
+      "直属"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_004",
+    "agent_type": "职场Agent",
+    "intent": "请假沟通",
+    "user_queries": [
+      "想请年假不知道怎么跟领导开口",
+      "怎么跟老板请病假比较自然",
+      "请假理由怎么说才合适"
+    ],
+    "keywords": [
+      "请假",
+      "年假",
+      "病假",
+      "休假"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_005",
+    "agent_type": "职场Agent",
+    "intent": "加班与工作量",
+    "user_queries": [
+      "工作量太大做不完怎么跟领导说",
+      "天天加班好累该怎么调整",
+      "怎么拒绝不合理的加班要求"
+    ],
+    "keywords": [
+      "加班",
+      "工作量",
+      "做不完",
+      "累"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_006",
+    "agent_type": "职场Agent",
+    "intent": "同事相处",
+    "user_queries": [
+      "同事总是推卸责任给我怎么办",
+      "怎么跟办公室里的老同事搞好关系",
+      "同事之间有了矛盾怎么处理"
+    ],
+    "keywords": [
+      "同事",
+      "办公室",
+      "搭档",
+      "协作"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_007",
+    "agent_type": "职场Agent",
+    "intent": "绩效与升职",
+    "user_queries": [
+      "年终绩效面谈该怎么准备",
+      "想升职要怎么跟领导表达",
+      "怎么让老板看到我的工作成果"
+    ],
+    "keywords": [
+      "绩效",
+      "升职",
+      "加薪",
+      "晋升",
+      "考核"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "intent_008",
+    "agent_type": "职场Agent",
+    "intent": "离职与跳槽",
+    "user_queries": [
+      "想换工作了怎么跟现公司提离职",
+      "跳槽的时候怎么谈薪资",
+      "离职交接有什么注意事项"
+    ],
+    "keywords": [
+      "离职",
+      "跳槽",
+      "辞职",
+      "换工作",
+      "交接"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_009",
+    "agent_type": "职场Agent",
+    "intent": "面试准备",
+    "user_queries": [
+      "面试的时候怎么自我介绍",
+      "怎么回答面试官的刁钻问题",
+      "面试结束后要不要发感谢信"
+    ],
+    "keywords": [
+      "面试",
+      "面试官",
+      "应聘",
+      "求职"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_010",
+    "agent_type": "职场Agent",
+    "intent": "PPT制作与展示",
+    "user_queries": [
+      "做年终总结的PPT有什么技巧",
+      "汇报用的PPT怎么做才好看",
+      "怎么在PPT演示的时候不紧张"
+    ],
+    "keywords": [
+      "PPT",
+      "演示",
+      "幻灯片",
+      "展示"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_011",
+    "agent_type": "职场Agent",
+    "intent": "跨部门协作",
+    "user_queries": [
+      "跟其他部门沟通总是不顺畅",
+      "怎么协调多个部门一起推进项目",
+      "跨部门合作有人不配合怎么办"
+    ],
+    "keywords": [
+      "跨部门",
+      "协作",
+      "配合",
+      "协调"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "intent_012",
+    "agent_type": "职场Agent",
+    "intent": "学生思维转变",
+    "user_queries": [
+      "刚工作总觉得还在读书的感觉",
+      "怎么摆脱等别人安排工作的习惯",
+      "职场里是不是不能再像学生那样问了"
+    ],
+    "keywords": [
+      "学生",
+      "新人",
+      "刚工作",
+      "职场思维"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "intent_013",
+    "agent_type": "社交Agent",
+    "intent": "红包礼仪",
+    "user_queries": [
+      "过年给长辈包红包多少钱合适",
+      "朋友结婚红包给多少",
+      "微信红包怎么发才得体"
+    ],
+    "keywords": [
+      "红包",
+      "份子钱",
+      "随礼",
+      "礼金"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_014",
+    "agent_type": "社交Agent",
+    "intent": "送礼技巧",
+    "user_queries": [
+      "去朋友家做客带什么礼物",
+      "过节给领导送礼送什么好",
+      "朋友生日送什么礼物比较合适"
+    ],
+    "keywords": [
+      "送礼",
+      "礼物",
+      "挑选",
+      "赠品"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_015",
+    "agent_type": "社交Agent",
+    "intent": "称呼礼仪",
+    "user_queries": [
+      "第一次见面不知道怎么称呼对方",
+      "对长辈怎么称呼才礼貌",
+      "公司里对前辈怎么叫合适"
+    ],
+    "keywords": [
+      "称呼",
+      "叫法",
+      "尊称",
+      "称谓"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_016",
+    "agent_type": "社交Agent",
+    "intent": "饭局社交",
+    "user_queries": [
+      "饭局上怎么跟人聊天",
+      "跟别人吃饭要注意什么礼仪",
+      "聚餐的时候怎么活跃气氛"
+    ],
+    "keywords": [
+      "饭局",
+      "吃饭",
+      "聚餐",
+      "用餐"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_017",
+    "agent_type": "社交Agent",
+    "intent": "聊天技巧",
+    "user_queries": [
+      "跟不熟的人聊天怎么找话题",
+      "聊天冷场了怎么救场",
+      "怎么让对话不尴尬地持续下去"
+    ],
+    "keywords": [
+      "聊天",
+      "话题",
+      "对话",
+      "交谈"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_018",
+    "agent_type": "社交Agent",
+    "intent": "夸奖赞美",
+    "user_queries": [
+      "怎么夸人才显得真诚",
+      "被别人夸奖了怎么回应",
+      "赞美同事该说些什么"
+    ],
+    "keywords": [
+      "夸奖",
+      "赞美",
+      "表扬",
+      "称赞"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_019",
+    "agent_type": "社交Agent",
+    "intent": "拒绝他人",
+    "user_queries": [
+      "不想参加活动怎么委婉拒绝",
+      "别人借东西不想借怎么说不伤感情",
+      "怎么拒绝别人的请求不尴尬"
+    ],
+    "keywords": [
+      "拒绝",
+      "婉拒",
+      "推辞",
+      "说不"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_020",
+    "agent_type": "社交Agent",
+    "intent": "安慰他人",
+    "user_queries": [
+      "朋友失恋了怎么安慰",
+      "同事家人去世了该说些什么",
+      "朋友遇到困难不知道怎么安慰"
+    ],
+    "keywords": [
+      "安慰",
+      "慰问",
+      "开导",
+      "劝解"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "intent_021",
+    "agent_type": "社交Agent",
+    "intent": "道歉表达",
+    "user_queries": [
+      "做错事了怎么跟人家道歉",
+      "道歉说什么话才真诚",
+      "误会了别人怎么表达歉意"
+    ],
+    "keywords": [
+      "道歉",
+      "对不起",
+      "抱歉",
+      "歉意"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_022",
+    "agent_type": "社交Agent",
+    "intent": "感谢表达",
+    "user_queries": [
+      "别人帮了忙怎么表达感谢",
+      "除了说谢谢还有什么方式",
+      "怎么让感谢听起来更走心"
+    ],
+    "keywords": [
+      "感谢",
+      "谢谢",
+      "感激",
+      "谢意"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_023",
+    "agent_type": "社交Agent",
+    "intent": "尴尬处理",
+    "user_queries": [
+      "说错话了场面很尴尬怎么救",
+      "不小心提到别人忌讳的话题怎么办",
+      "当众出丑了怎么缓解尴尬"
+    ],
+    "keywords": [
+      "尴尬",
+      "出丑",
+      "冷场",
+      "失误"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "intent_024",
+    "agent_type": "社交Agent",
+    "intent": "社恐应对",
+    "user_queries": [
+      "人一多就紧张说不出话怎么办",
+      "不想参加社交活动但又怕错过机会",
+      "怎么克服在人前发言的恐惧"
+    ],
+    "keywords": [
+      "社恐",
+      "紧张",
+      "害怕",
+      "焦虑",
+      "恐惧"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "intent_025",
+    "agent_type": "餐饮Agent",
+    "intent": "控糖建议",
+    "user_queries": [
+      "想少吃糖但总是忍不住怎么办",
+      "有什么低糖的饮料推荐",
+      "减糖期间可以吃水果吗"
+    ],
+    "keywords": [
+      "糖",
+      "控糖",
+      "减糖",
+      "低糖"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_026",
+    "agent_type": "餐饮Agent",
+    "intent": "辣味饮食",
+    "user_queries": [
+      "吃太辣了对胃有影响吗",
+      "不太能吃辣怎么跟朋友一起吃火锅",
+      "为什么有人特别爱吃辣"
+    ],
+    "keywords": [
+      "辣",
+      "辣椒",
+      "火锅",
+      "川菜"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_027",
+    "agent_type": "餐饮Agent",
+    "intent": "咖啡因摄入",
+    "user_queries": [
+      "每天喝太多咖啡会不会不好",
+      "下午喝咖啡影响晚上睡觉怎么办",
+      "有什么可以替代咖啡提神的东西"
+    ],
+    "keywords": [
+      "咖啡",
+      "咖啡因",
+      "提神",
+      "失眠"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_028",
+    "agent_type": "餐饮Agent",
+    "intent": "热量控制",
+    "user_queries": [
+      "怎么知道自己每天吃了多少热量",
+      "外卖怎么点才能热量低一点",
+      "减脂期间怎么控制食欲"
+    ],
+    "keywords": [
+      "热量",
+      "卡路里",
+      "减脂",
+      "减肥",
+      "控制"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_029",
+    "agent_type": "餐饮Agent",
+    "intent": "奶茶饮品",
+    "user_queries": [
+      "奶茶是不是不健康",
+      "想喝奶茶又怕胖怎么办",
+      "有没有好喝的低卡奶茶推荐"
+    ],
+    "keywords": [
+      "奶茶",
+      "饮品",
+      "奶盖",
+      "果茶"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_030",
+    "agent_type": "餐饮Agent",
+    "intent": "茶饮选择",
+    "user_queries": [
+      "喝茶有什么好处",
+      "不同种类的茶适合什么时候喝",
+      "不太喜欢喝白开水有什么健康的替代"
+    ],
+    "keywords": [
+      "茶",
+      "绿茶",
+      "红茶",
+      "乌龙茶",
+      "泡茶"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_031",
+    "agent_type": "餐饮Agent",
+    "intent": "饮酒建议",
+    "user_queries": [
+      "不能喝酒的人饭桌上怎么应对",
+      "喝酒前吃什么不容易醉",
+      "怎么礼貌地拒绝别人劝酒"
+    ],
+    "keywords": [
+      "酒",
+      "喝酒",
+      "敬酒",
+      "酒量",
+      "醉酒"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "intent_032",
+    "agent_type": "餐饮Agent",
+    "intent": "饮料选择",
+    "user_queries": [
+      "市面上的饮料哪些比较健康",
+      "不想喝含糖饮料还有什么选择",
+      "运动后喝什么补水最好"
+    ],
+    "keywords": [
+      "饮料",
+      "饮品",
+      "果汁",
+      "苏打水",
+      "运动饮料"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_033",
+    "agent_type": "办事Agent",
+    "intent": "医院就医",
+    "user_queries": [
+      "第一次一个人去医院看病流程是什么",
+      "怎么挂号才能挂到专家号",
+      "看病的时候怎么跟医生描述症状"
+    ],
+    "keywords": [
+      "医院",
+      "看病",
+      "挂号",
+      "就诊",
+      "门诊"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_034",
+    "agent_type": "办事Agent",
+    "intent": "银行办理",
+    "user_queries": [
+      "去银行办卡要带什么材料",
+      "银行贷款需要什么条件",
+      "银行柜台排队太久有没有快捷方式"
+    ],
+    "keywords": [
+      "银行",
+      "办卡",
+      "贷款",
+      "柜台"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_035",
+    "agent_type": "办事Agent",
+    "intent": "政府办事",
+    "user_queries": [
+      "去政府部门办事要带什么证件",
+      "政务大厅的流程一般是怎样的",
+      "办事被工作人员态度不好怎么办"
+    ],
+    "keywords": [
+      "政府",
+      "政务",
+      "办事大厅",
+      "窗口"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "intent_036",
+    "agent_type": "办事Agent",
+    "intent": "证件办理",
+    "user_queries": [
+      "身份证丢了怎么补办",
+      "护照过期了怎么换新的",
+      "居住证怎么办理"
+    ],
+    "keywords": [
+      "身份证",
+      "护照",
+      "居住证",
+      "证件",
+      "补办"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_037",
+    "agent_type": "办事Agent",
+    "intent": "缴费业务",
+    "user_queries": [
+      "水电费怎么在网上交",
+      "物业费涨价了合理吗",
+      "燃气费欠费了怎么补缴"
+    ],
+    "keywords": [
+      "缴费",
+      "水电费",
+      "物业费",
+      "燃气费"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "intent_038",
+    "agent_type": "办事Agent",
+    "intent": "医保社保",
+    "user_queries": [
+      "医保报销需要什么材料",
+      "社保断缴了有什么影响",
+      "怎么查询自己的社保缴纳情况"
+    ],
+    "keywords": [
+      "医保",
+      "社保",
+      "报销",
+      "缴纳",
+      "五险一金"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "intent_039",
+    "agent_type": "办事Agent",
+    "intent": "公积金业务",
+    "user_queries": [
+      "公积金怎么提取出来",
+      "公积金贷款买房需要什么条件",
+      "换城市了公积金怎么转移"
+    ],
+    "keywords": [
+      "公积金",
+      "提取",
+      "转移",
+      "公积金中心"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "intent_040",
+    "agent_type": "办事Agent",
+    "intent": "投诉维权",
+    "user_queries": [
+      "消费被坑了怎么维权",
+      "对服务质量不满意怎么投诉",
+      "商家不退款怎么办"
+    ],
+    "keywords": [
+      "投诉",
+      "维权",
+      "退款",
+      "消费者",
+      "维权"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "intent_041",
+    "agent_type": "主控Agent",
+    "intent": "多领域交叉-商务宴请",
+    "user_queries": [
+      "请客户吃饭该怎么安排座位和点菜",
+      "商务饭局上怎么既谈工作又不尴尬",
+      "招待客户敬酒时该怎么说话"
+    ],
+    "keywords": [
+      "客户",
+      "饭局",
+      "商务",
+      "职场",
+      "餐饮"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "intent_042",
+    "agent_type": "主控Agent",
+    "intent": "多领域交叉-婚礼职场",
+    "user_queries": [
+      "领导结婚该随多少份子钱",
+      "同事的婚礼邀请该不该去",
+      "婚礼上和公司同事坐一桌要注意什么"
+    ],
+    "keywords": [
+      "婚礼",
+      "同事",
+      "领导",
+      "随礼",
+      "职场"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "intent_043",
+    "agent_type": "主控Agent",
+    "intent": "多领域交叉-团建社交",
+    "user_queries": [
+      "公司团建不想喝酒怎么推",
+      "团建活动上怎么跟不熟同事聊天",
+      "团建聚餐敬酒说什么比较好"
+    ],
+    "keywords": [
+      "团建",
+      "同事",
+      "聚餐",
+      "喝酒",
+      "职场"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "intent_044",
+    "agent_type": "主控Agent",
+    "intent": "多领域交叉-人情往来",
+    "user_queries": [
+      "朋友找我帮工作相关的忙该答应吗",
+      "怎么跟关系好的同事保持适当距离",
+      "过节要不要给领导送礼送什么"
+    ],
+    "keywords": [
+      "人情",
+      "送礼",
+      "帮忙",
+      "领导",
+      "朋友",
+      "职场"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "intent_045",
+    "agent_type": "主控Agent",
+    "intent": "多领域交叉-新人融入",
+    "user_queries": [
+      "新人入职第一天中午同事约吃饭怎么应对",
+      "刚入职被拉去团建要注意什么",
+      "新公司第一次见面会给领导带什么"
+    ],
+    "keywords": [
+      "新人",
+      "入职",
+      "领导",
+      "同事",
+      "团建"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "intent_046",
+    "agent_type": "主控Agent",
+    "intent": "多领域交叉-社交焦虑",
+    "user_queries": [
+      "每次开会发言前就紧张得吃不下饭",
+      "社交场合总担心自己说错话怎么办",
+      "不想参加聚餐但又怕影响工作关系"
+    ],
+    "keywords": [
+      "紧张",
+      "社交",
+      "焦虑",
+      "开会",
+      "聚餐",
+      "职场"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "intent_047",
+    "agent_type": "主控Agent",
+    "intent": "多领域交叉-拒绝场景",
+    "user_queries": [
+      "怎么拒绝领导的酒又不伤面子",
+      "不想参加同事聚会怎么说不尴尬",
+      "朋友让我在工作中行方便怎么拒绝"
+    ],
+    "keywords": [
+      "拒绝",
+      "领导",
+      "同事",
+      "喝酒",
+      "朋友",
+      "帮忙"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "intent_048",
+    "agent_type": "主控Agent",
+    "intent": "多领域交叉-边界设立",
+    "user_queries": [
+      "同事总打探我的私事怎么应对",
+      "工作中怎么保护自己的个人信息",
+      "亲戚问工资不想说但怕伤感情怎么办"
+    ],
+    "keywords": [
+      "隐私",
+      "边界",
+      "同事",
+      "亲戚",
+      "保护"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "intent_049",
+    "agent_type": "主控Agent",
+    "intent": "多领域交叉-情绪管理",
+    "user_queries": [
+      "被同事当面开玩笑很生气但又要保持专业",
+      "工作中受了委屈回家怎么调节情绪",
+      "职场上遇到不公平的事怎么平静应对"
+    ],
+    "keywords": [
+      "情绪",
+      "同事",
+      "专业",
+      "委屈",
+      "职场"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "intent_050",
+    "agent_type": "主控Agent",
+    "intent": "多领域交叉-综合社交",
+    "user_queries": [
+      "家里请客吃饭要准备什么",
+      "朋友聚餐遇到不喜欢的人怎么办",
+      "怎么既维护友情又不让自己太累"
+    ],
+    "keywords": [
+      "请客",
+      "聚餐",
+      "朋友",
+      "社交",
+      "人情"
+    ],
+    "difficulty": "hard"
+  }
+]
