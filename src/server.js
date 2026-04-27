@@ -15,6 +15,10 @@ const swaggerUi = require("swagger-ui-express");
 const app = express();
 const port = config.PORT || 3000;
 
+const frontendDist = path.join(__dirname, "../frontend/dist");
+const appDist = path.join(__dirname, "../app/dist");
+const publicDir = path.join(__dirname, "../public");
+
 // Simple request logger
 app.use((req, res, next) => {
   const start = Date.now();
@@ -25,10 +29,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const distDir = path.join(__dirname, "../frontend/dist");
-const publicDir = path.join(__dirname, "../public");
-const staticDir = require("fs").existsSync(distDir) ? distDir : publicDir;
-
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: {
@@ -36,9 +36,9 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "blob:"],
+      imgSrc: ["'self'", "data:", "blob:", "https:"],
       connectSrc: ["'self'"],
-      fontSrc: ["'self'"],
+      fontSrc: ["'self'", "https:"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
@@ -51,8 +51,8 @@ app.use(cors({
 }));
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // limit each IP to 200 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 200,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests, please try again later." }
@@ -71,17 +71,57 @@ app.use("/api/auth/", authLimiter);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(staticDir));
 
+// API routes
 app.use("/api/auth", authRouter);
 app.use("/api/agent", agentRouter);
 app.use("/api/commonsense", commonsenseRouter);
 app.use("/api", indexRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// SPA fallback: serve index.html for non-API routes (only GET)
+// Landing page (product homepage) static assets
+app.use("/landing", express.static(appDist));
+
+// Frontend app entry points
+const frontendPaths = ["/chat", "/login", "/register", "/browse", "/history"];
+app.get(frontendPaths, (req, res) => {
+  if (require("fs").existsSync(frontendDist)) {
+    res.sendFile(path.join(frontendDist, "index.html"));
+  } else {
+    res.sendFile(path.join(publicDir, "index.html"));
+  }
+});
+app.get("/browse/:id", (req, res) => {
+  if (require("fs").existsSync(frontendDist)) {
+    res.sendFile(path.join(frontendDist, "index.html"));
+  } else {
+    res.sendFile(path.join(publicDir, "index.html"));
+  }
+});
+
+// Root path → landing page
+app.get("/", (req, res) => {
+  if (require("fs").existsSync(appDist)) {
+    res.sendFile(path.join(appDist, "index.html"));
+  } else if (require("fs").existsSync(frontendDist)) {
+    res.sendFile(path.join(frontendDist, "index.html"));
+  } else {
+    res.sendFile(path.join(publicDir, "index.html"));
+  }
+});
+
+// Frontend static assets
+app.use(express.static(frontendDist));
+
+// Landing page SPA fallback
 app.get("*", (req, res) => {
-  res.sendFile(path.join(staticDir, "index.html"));
+  if (require("fs").existsSync(appDist)) {
+    res.sendFile(path.join(appDist, "index.html"));
+  } else if (require("fs").existsSync(frontendDist)) {
+    res.sendFile(path.join(frontendDist, "index.html"));
+  } else {
+    res.sendFile(path.join(publicDir, "index.html"));
+  }
 });
 
 // Global error handler
@@ -98,7 +138,8 @@ app.use((err, req, res, next) => {
 app.listen(port, async () => {
   console.log(`nomingbai backend running at http://localhost:${port}`);
   console.log(`NODE_ENV=${config.NODE_ENV}, DATABASE_URL=${config.DATABASE_URL ? "configured" : "missing"}`);
-  console.log(`Serving static files from: ${staticDir}`);
+  console.log(`Landing page: ${require("fs").existsSync(appDist) ? appDist : "not built"}`);
+  console.log(`App frontend: ${require("fs").existsSync(frontendDist) ? frontendDist : "not built"}`);
 
   try {
     await initFromDatabase();
