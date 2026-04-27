@@ -180,6 +180,21 @@ async function saveAgentLog(user, prompt, output) {
   await db.query("INSERT INTO agent_logs (username, prompt, response) VALUES (?, ?, ?)", [user.username, prompt, output]);
 }
 
+async function* streamResponse(prompt) {
+  const fullText = await generateResponse(prompt);
+  const chunkSize = 4; // characters per chunk
+  const delayMs = 12;    // ms between chunks
+
+  for (let i = 0; i < fullText.length; i += chunkSize) {
+    const chunk = fullText.slice(i, i + chunkSize);
+    yield { chunk };
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+
+  yield { done: true, createdAt: new Date().toISOString() };
+}
+
 module.exports = {
-  invokeAgent
+  invokeAgent,
+  streamResponse
 };

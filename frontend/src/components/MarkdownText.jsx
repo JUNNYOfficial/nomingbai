@@ -33,8 +33,8 @@ function renderMarkdown(text) {
     return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="underline text-blue-600 hover:text-blue-800">${label}</a>`
   })
 
-  // Auto-link URLs — only http/https
-  html = html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="underline text-blue-600 hover:text-blue-800">$1</a>')
+  // Auto-link URLs — only http/https, avoid matching inside existing href attributes
+  html = html.replace(/(?<!href=")https?:\/\/[^\s<"]+/g, (url) => `<a href="${url}" target="_blank" rel="noopener noreferrer" class="underline text-blue-600 hover:text-blue-800">${url}</a>`)
 
   // Line breaks
   html = html.replace(/\n/g, '<br/>')

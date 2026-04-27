@@ -44,6 +44,16 @@ export const authAPI = {
 
 export const agentAPI = {
   invoke: (prompt) => api.post('/agent/invoke', { prompt }),
+  invokeStream: (prompt) => {
+    return fetch('/api/agent/invoke-stream', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('nomingbai_token') || ''}`
+      },
+      body: JSON.stringify({ prompt })
+    })
+  },
   history: (page = 1, limit = 20) => api.get('/agent/history', { params: { page, limit } }),
 }
 

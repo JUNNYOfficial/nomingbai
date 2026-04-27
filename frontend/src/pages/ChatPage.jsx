@@ -79,10 +79,9 @@ export default function ChatPage() {
     }
     setError('')
 
-    // For regenerate, remove the previous assistant message and its preceding user message
+    // For regenerate, remove the previous assistant message
     if (regeneratePrompt) {
       setMessages((prev) => {
-        // Find the last assistant message index
         const lastAssistantIndex = prev.length - 1
         if (lastAssistantIndex >= 0 && prev[lastAssistantIndex].role === 'assistant') {
           return prev.slice(0, lastAssistantIndex)
@@ -95,16 +94,74 @@ export default function ChatPage() {
 
     setLoading(true)
 
+    // Add placeholder assistant message for streaming
+    const assistantId = Date.now()
+    setMessages((prev) => [
+      ...prev,
+      { role: 'assistant', content: '', time: new Date(), _id: assistantId }
+    ])
+
     try {
-      const res = await agentAPI.invoke(userMsg)
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: res.data.output, time: new Date(res.data.createdAt) }
-      ])
+      const response = await agentAPI.invokeStream(userMsg)
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let fullOutput = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (!trimmed.startsWith('data: ')) continue
+          const jsonStr = trimmed.slice(6)
+          if (jsonStr === '[DONE]') continue
+          try {
+            const event = JSON.parse(jsonStr)
+            if (event.chunk) {
+              fullOutput += event.chunk
+              setMessages((prev) => {
+                const idx = prev.findIndex((m) => m._id === assistantId)
+                if (idx === -1) return prev
+                const updated = [...prev]
+                updated[idx] = { ...updated[idx], content: fullOutput }
+                return updated
+              })
+            }
+            if (event.error) {
+              throw new Error(event.error)
+            }
+          } catch {
+            // ignore malformed SSE lines
+          }
+        }
+      }
+
+      // Finalize: replace placeholder with clean message (remove _id)
+      setMessages((prev) => {
+        const idx = prev.findIndex((m) => m._id === assistantId)
+        if (idx === -1) return prev
+        const updated = [...prev]
+        updated[idx] = { role: 'assistant', content: fullOutput, time: new Date() }
+        return updated
+      })
     } catch (err) {
-      const msg = err.response?.data?.error || '调用失败，请稍后重试'
+      const msg = err.message || '调用失败，请稍后重试'
       setError(msg)
-      setMessages((prev) => [...prev, { role: 'error', content: msg, time: new Date() }])
+      setMessages((prev) => {
+        const idx = prev.findIndex((m) => m._id === assistantId)
+        if (idx !== -1) {
+          const updated = [...prev]
+          updated[idx] = { role: 'error', content: msg, time: new Date() }
+          return updated
+        }
+        return [...prev, { role: 'error', content: msg, time: new Date() }]
+      })
     } finally {
       setLoading(false)
       setTimeout(() => inputRef.current?.focus(), 0)

@@ -50,6 +50,56 @@ router.post("/invoke", verifyToken, async (req, res) => {
 
 /**
  * @swagger
+ * /agent/invoke-stream:
+ *   post:
+ *     summary: 调用 Agent（流式响应）
+ *     tags: [Agent]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               prompt: { type: string }
+ *     responses:
+ *       200:
+ *         description: SSE 流式返回 Agent 回答
+ *         content:
+ *           text/event-stream:
+ *             schema:
+ *               type: string
+ */
+router.post("/invoke-stream", verifyToken, async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt || typeof prompt !== "string") {
+      return res.status(400).json({ error: "prompt is required" });
+    }
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    const { streamResponse } = require("../services/agentService");
+    const stream = streamResponse(prompt);
+
+    for await (const event of stream) {
+      res.write(`data: ${JSON.stringify(event)}\n\n`);
+    }
+
+    res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+    res.end();
+  } catch (error) {
+    res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
+    res.end();
+  }
+});
+
+/**
+ * @swagger
  * /agent/history:
  *   get:
  *     summary: 对话历史

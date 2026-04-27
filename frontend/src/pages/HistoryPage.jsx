@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { agentAPI } from '../api'
-import { History, ChevronLeft, ChevronRight, MessageSquare, Clock, Copy, Check } from 'lucide-react'
+import { History, ChevronLeft, ChevronRight, MessageSquare, Clock, Copy, Check, Download } from 'lucide-react'
 import MarkdownText from '../components/MarkdownText'
 import { useToast } from '../components/Toast'
 
@@ -31,6 +31,45 @@ export default function HistoryPage() {
     }
   }
 
+  const exportHistory = (format) => {
+    if (logs.length === 0) return
+    const timestamp = new Date().toISOString().slice(0, 10)
+    if (format === 'json') {
+      const data = logs.map((l) => ({
+        id: l.id,
+        prompt: l.prompt,
+        response: l.response,
+        created_at: l.created_at
+      }))
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `未言对话历史_${timestamp}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      addToast('已导出 JSON', 'success')
+    } else {
+      const headers = 'ID,Prompt,Response,Created At\n'
+      const rows = logs.map((l) => {
+        const escape = (s) => `"${String(s).replace(/"/g, '""')}"`
+        return [l.id, escape(l.prompt), escape(l.response), l.created_at].join(',')
+      }).join('\n')
+      const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `未言对话历史_${timestamp}.csv`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      addToast('已导出 CSV', 'success')
+    }
+  }
+
   useEffect(() => {
     fetchHistory()
   }, [page])
@@ -40,7 +79,19 @@ export default function HistoryPage() {
       <div className="flex items-center gap-2 mb-6">
         <History className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">对话历史</h1>
-        <span className="text-sm text-gray-400 ml-auto">共 {total} 条</span>
+        <div className="ml-auto flex items-center gap-2">
+          {logs.length > 0 && (
+            <button
+              onClick={() => exportHistory('json')}
+              className="text-[11px] text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors inline-flex items-center gap-1"
+              title="导出 JSON"
+            >
+              <Download className="w-3 h-3" />
+              导出
+            </button>
+          )}
+          <span className="text-sm text-gray-400">共 {total} 条</span>
+        </div>
       </div>
 
       {loading && logs.length === 0 && (
