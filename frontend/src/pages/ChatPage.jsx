@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { agentAPI } from '../api'
 import { useToast } from '../components/Toast'
-import { Send, Lightbulb, User, Bot, AlertTriangle, Copy, Check, RotateCcw } from 'lucide-react'
+import { Send, Lightbulb, User, Bot, AlertTriangle, Copy, Check, RotateCcw, Download } from 'lucide-react'
 import MarkdownText from '../components/MarkdownText'
 
 const EXAMPLES = [
@@ -240,15 +240,27 @@ export default function ChatPage() {
             <p className="text-[11px] text-gray-400">
               nomingbai 的回答基于常识库，仅供参考
             </p>
-            {messages.length > 0 && (
-              <button
-                type="button"
-                onClick={clearChat}
-                className="text-[11px] text-gray-400 hover:text-red-500 transition-colors"
-              >
-                清空对话
-              </button>
-            )}
+            <div className="flex items-center gap-3">
+              {messages.length > 0 && (
+                <button
+                  type="button"
+                  onClick={exportChat}
+                  className="text-[11px] text-gray-400 hover:text-gray-700 transition-colors inline-flex items-center gap-1"
+                >
+                  <Download className="w-3 h-3" />
+                  导出对话
+                </button>
+              )}
+              {messages.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearChat}
+                  className="text-[11px] text-gray-400 hover:text-red-500 transition-colors"
+                >
+                  清空对话
+                </button>
+              )}
+            </div>
           </div>
           <form onSubmit={handleSubmit} className="flex gap-2">
             <input
