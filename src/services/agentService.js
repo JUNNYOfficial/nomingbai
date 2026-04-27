@@ -1,5 +1,6 @@
 const db = require("../lib/database");
 const { searchCommonsense, getRandomCommonsense } = require("./commonsenseService");
+const { classifyIntent, searchAgentData, formatConversationResponse } = require("./agentDataService");
 
 function difficultyToStars(difficulty) {
   const map = { easy: "⭐", medium: "⭐⭐", hard: "⭐⭐⭐" };
@@ -26,12 +27,59 @@ async function invokeAgent(user, prompt) {
 }
 
 async function generateResponse(prompt) {
-  // Search for relevant commonsense data
+  // Search multiple data sources in parallel
   const scoredResults = searchCommonsense(prompt, 5);
-  const topScore = scoredResults.length > 0 ? scoredResults[0].score : 0;
+  const topCommonsenseScore = scoredResults.length > 0 ? scoredResults[0].score : 0;
 
-  // High relevance: detailed answer with the best match
-  if (topScore >= 12) {
+  // Classify intent and search agent training data
+  const intentResult = classifyIntent(prompt);
+  let agentResults = [];
+  let agentType = null;
+
+  if (intentResult && intentResult.score >= 3) {
+    agentType = intentResult.item.agent_type;
+    agentResults = searchAgentData(agentType, prompt, 3);
+  }
+
+  // If no intent match, try searching all agent data
+  if (agentResults.length === 0) {
+    agentResults = searchAgentData(null, prompt, 3);
+  }
+
+  const topAgentScore = agentResults.length > 0 ? agentResults[0].score : 0;
+
+  // Decide which data source is more relevant
+  const useAgentData = topAgentScore >= 6 && topAgentScore > topCommonsenseScore * 2;
+  const useCommonsenseHigh = topCommonsenseScore >= 12 && !useAgentData;
+  const useCommonsenseMedium = topCommonsenseScore >= 5 && !useAgentData && topAgentScore < 6;
+
+  // Priority 1: Agent training data (when clearly more relevant than commonsense)
+  if (useAgentData) {
+    const primary = agentResults[0].item;
+    const formatted = formatConversationResponse(primary);
+    if (formatted) {
+      let output = formatted;
+
+      if (agentResults.length >= 2 && agentResults[1].score >= 4) {
+        const secondary = agentResults[1].item;
+        const secFormatted = formatConversationResponse(secondary);
+        if (secFormatted) {
+          output += `\n\n📌 你可能还想了解：${secondary.intent}\n${secFormatted.split("\n\n").slice(1).join("\n\n").substring(0, 200)}...`;
+        }
+      }
+
+      // Blend with commonsense if also relevant
+      if (topCommonsenseScore >= 5) {
+        const cs = scoredResults[0].item;
+        output += `\n\n📖 相关常识：${cs.question}\n${cs.answer}`;
+      }
+
+      return output;
+    }
+  }
+
+  // Priority 2: Commonsense data (high confidence)
+  if (useCommonsenseHigh) {
     const primary = scoredResults[0].item;
     let output = `${primary.answer}`;
 
@@ -50,8 +98,27 @@ async function generateResponse(prompt) {
     return output;
   }
 
-  // Medium relevance: concise answer with suggestions
-  if (topScore >= 5) {
+  // Priority 3: Commonsense medium confidence
+  if (useCommonsenseMedium) {
+    const primary = scoredResults[0].item;
+    let output = `${primary.answer}`;
+
+    if (scoredResults.length >= 2 && scoredResults[1].score >= 8) {
+      const secondary = scoredResults[1].item;
+      output += `\n\n📌 你可能还想了解：${secondary.question}\n${secondary.answer}`;
+    }
+
+    output += `\n\n⚠️ 认知陷阱：${primary.trap}`;
+    output += `\n📊 难度：${difficultyToStars(primary.difficulty)}`;
+
+    if (primary.related && primary.related.length > 0) {
+      output += `\n🔗 关联条目：${primary.related.join(", ")}`;
+    }
+
+    return output;
+  }
+
+  if (topCommonsenseScore >= 5) {
     const primary = scoredResults[0].item;
     let output = `根据你的问题，我找到了相关内容：\n\n${primary.question}\n\n${primary.answer}`;
 
@@ -64,6 +131,13 @@ async function generateResponse(prompt) {
     }
 
     return output;
+  }
+
+  // Priority 3: Agent data with lower score but still relevant
+  if (topAgentScore >= 3) {
+    const primary = agentResults[0].item;
+    const formatted = formatConversationResponse(primary);
+    if (formatted) return formatted;
   }
 
   // Low relevance or no match: fallback to random commonsense
