@@ -65,14 +65,28 @@ export default function ChatPage() {
     ))
   }, [messages])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!input.trim() || loading) return
+  const handleSubmit = async (e, regeneratePrompt = null) => {
+    if (e && e.preventDefault) e.preventDefault()
 
-    const userMsg = input.trim()
-    setInput('')
+    const userMsg = regeneratePrompt || input.trim()
+    if (!userMsg || loading) return
+    if (!regeneratePrompt) setInput('')
     setError('')
-    setMessages((prev) => [...prev, { role: 'user', content: userMsg, time: new Date() }])
+
+    // For regenerate, remove the previous assistant message and its preceding user message
+    if (regeneratePrompt) {
+      setMessages((prev) => {
+        // Find the last assistant message index
+        const lastAssistantIndex = prev.length - 1
+        if (lastAssistantIndex >= 0 && prev[lastAssistantIndex].role === 'assistant') {
+          return prev.slice(0, lastAssistantIndex)
+        }
+        return prev
+      })
+    } else {
+      setMessages((prev) => [...prev, { role: 'user', content: userMsg, time: new Date() }])
+    }
+
     setLoading(true)
 
     try {
@@ -87,7 +101,6 @@ export default function ChatPage() {
       setMessages((prev) => [...prev, { role: 'error', content: msg, time: new Date() }])
     } finally {
       setLoading(false)
-      // 延迟聚焦，避免在 setState 同步期间操作 DOM
       setTimeout(() => inputRef.current?.focus(), 0)
     }
   }
@@ -101,6 +114,25 @@ export default function ChatPage() {
       setMessages([])
       localStorage.removeItem('nomingbai_chat')
     }
+  }
+
+  const exportChat = () => {
+    if (messages.length === 0) return
+    const md = messages.map((m) => {
+      const time = m.time.toLocaleString('zh-CN')
+      const roleLabel = m.role === 'user' ? '👤 用户' : m.role === 'assistant' ? '🤖 未言' : '⚠️ 错误'
+      return `**${roleLabel}** · ${time}\n\n${m.content}`
+    }).join('\n\n---\n\n')
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `未言对话_${new Date().toISOString().slice(0, 10)}.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    addToast('对话已导出为 Markdown', 'success')
   }
 
   return (

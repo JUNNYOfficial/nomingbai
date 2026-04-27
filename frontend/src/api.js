@@ -19,9 +19,15 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('nomingbai_token')
-      localStorage.removeItem('nomingbai_user')
-      window.location.href = '/login'
+      // Avoid redirect loop if already on login page
+      if (!window.location.pathname.includes('/login')) {
+        localStorage.removeItem('nomingbai_token')
+        localStorage.removeItem('nomingbai_user')
+        // Show a brief message before redirect
+        const msg = error.response?.data?.error || '登录已过期，请重新登录'
+        alert(msg)
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
@@ -32,6 +38,8 @@ export default api
 export const authAPI = {
   register: (username, password) => api.post('/auth/register', { username, password }),
   login: (username, password) => api.post('/auth/login', { username, password }),
+  me: () => api.get('/auth/me'),
+  changePassword: (currentPassword, newPassword) => api.post('/auth/change-password', { currentPassword, newPassword }),
 }
 
 export const agentAPI = {

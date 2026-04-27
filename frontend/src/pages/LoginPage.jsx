@@ -33,7 +33,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const res = await authAPI.login(username.trim(), password)
-      login(res.data.token, res.data.username)
+      login(res.data.token, res.data.username, res.data.role)
       addToast('登录成功', 'success')
       navigate('/chat')
     } catch (err) {

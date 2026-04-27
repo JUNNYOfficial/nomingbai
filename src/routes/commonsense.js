@@ -6,7 +6,7 @@
  */
 
 const express = require("express");
-const { verifyToken } = require("../lib/auth");
+const { verifyToken, requireAdmin } = require("../lib/auth");
 const commonsenseService = require("../services/commonsenseService");
 
 const router = express.Router();
@@ -145,8 +145,32 @@ router.get("/:id", async (req, res) => {
  *       401:
  *         description: 未登录
  */
-router.post("/", verifyToken, async (req, res) => {
+function validateCommonsenseBody(body) {
+  const { category, question, answer } = body;
+  if (!category || typeof category !== 'string' || category.trim().length === 0) {
+    return { valid: false, message: '分类不能为空' };
+  }
+  if (!question || typeof question !== 'string' || question.trim().length === 0) {
+    return { valid: false, message: '问题不能为空' };
+  }
+  if (!answer || typeof answer !== 'string' || answer.trim().length === 0) {
+    return { valid: false, message: '答案不能为空' };
+  }
+  if (question.length > 500) {
+    return { valid: false, message: '问题长度不能超过 500 字符' };
+  }
+  if (answer.length > 5000) {
+    return { valid: false, message: '答案长度不能超过 5000 字符' };
+  }
+  return { valid: true };
+}
+
+router.post("/", verifyToken, requireAdmin, async (req, res) => {
   try {
+    const v = validateCommonsenseBody(req.body);
+    if (!v.valid) {
+      return res.status(400).json({ error: v.message });
+    }
     const item = await commonsenseService.createCommonsense(req.body);
     res.status(201).json({ data: item });
   } catch (error) {
@@ -175,8 +199,12 @@ router.post("/", verifyToken, async (req, res) => {
  *       404:
  *         description: 常识条目不存在
  */
-router.put("/:id", verifyToken, async (req, res) => {
+router.put("/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
+    const v = validateCommonsenseBody(req.body);
+    if (!v.valid) {
+      return res.status(400).json({ error: v.message });
+    }
     const item = await commonsenseService.updateCommonsense(req.params.id, req.body);
     res.json({ data: item });
   } catch (error) {
@@ -208,7 +236,7 @@ router.put("/:id", verifyToken, async (req, res) => {
  *       404:
  *         description: 常识条目不存在
  */
-router.delete("/:id", verifyToken, async (req, res) => {
+router.delete("/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     await commonsenseService.deleteCommonsense(req.params.id);
     res.json({ message: "删除成功" });

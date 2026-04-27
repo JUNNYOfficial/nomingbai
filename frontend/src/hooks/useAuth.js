@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { authAPI } from '../api'
 
 export function useAuth() {
   const [user, setUser] = useState(null)
@@ -18,8 +19,8 @@ export function useAuth() {
     setLoading(false)
   }, [])
 
-  const login = useCallback((token, username) => {
-    const userData = { username }
+  const login = useCallback((token, username, role = 'user') => {
+    const userData = { username, role }
     localStorage.setItem('nomingbai_token', token)
     localStorage.setItem('nomingbai_user', JSON.stringify(userData))
     setUser(userData)
@@ -31,5 +32,19 @@ export function useAuth() {
     setUser(null)
   }, [])
 
-  return { user, loading, isLoggedIn: !!user, login, logout }
+  const refreshProfile = useCallback(async () => {
+    try {
+      const res = await authAPI.me()
+      const updated = { username: res.data.username, role: res.data.role }
+      localStorage.setItem('nomingbai_user', JSON.stringify(updated))
+      setUser(updated)
+      return updated
+    } catch {
+      return null
+    }
+  }, [])
+
+  const isAdmin = user?.role === 'admin'
+
+  return { user, loading, isLoggedIn: !!user, isAdmin, login, logout, refreshProfile }
 }

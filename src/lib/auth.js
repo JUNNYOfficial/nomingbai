@@ -23,6 +23,16 @@ function verifyToken(req, res, next) {
   }
 }
 
+function requireAdmin(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: "Forbidden: admin access required" });
+  }
+  next();
+}
+
 function validatePassword(password) {
   if (!password || typeof password !== "string") {
     return { valid: false, message: "密码不能为空" };
@@ -39,5 +49,6 @@ function validatePassword(password) {
 module.exports = {
   signToken,
   verifyToken,
+  requireAdmin,
   validatePassword
 };

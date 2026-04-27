@@ -7,6 +7,17 @@ function escapeHtml(text) {
     .replace(/>/g, '&gt;')
 }
 
+const SAFE_URL_PROTOCOLS = ['http:', 'https:', 'mailto:']
+
+function isSafeUrl(url) {
+  try {
+    const parsed = new URL(url, 'http://localhost')
+    return SAFE_URL_PROTOCOLS.includes(parsed.protocol)
+  } catch {
+    return false
+  }
+}
+
 function renderMarkdown(text) {
   let html = escapeHtml(text)
 
@@ -16,10 +27,13 @@ function renderMarkdown(text) {
   // Italic: *text*
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>')
 
-  // Links: [text](url)
-  html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="underline text-blue-600 hover:text-blue-800">$1</a>')
+  // Links: [text](url) — sanitize href
+  html = html.replace(/\[(.+?)\]\((.+?)\)/g, (_match, label, url) => {
+    const safeUrl = isSafeUrl(url) ? escapeHtml(url) : '#'
+    return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="underline text-blue-600 hover:text-blue-800">${label}</a>`
+  })
 
-  // Auto-link URLs
+  // Auto-link URLs — only http/https
   html = html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="underline text-blue-600 hover:text-blue-800">$1</a>')
 
   // Line breaks

@@ -3,7 +3,7 @@ import { commonsenseAPI } from '../api'
 import { useToast } from '../components/Toast'
 import {
   Database, Tag, Plus, Trash2, Edit3, Search,
-  BookOpen, BarChart3, AlertTriangle, Check, X
+  BookOpen, BarChart3, AlertTriangle, Check, X, ChevronLeft, ChevronRight
 } from 'lucide-react'
 
 export default function AdminPage() {
@@ -16,74 +16,105 @@ export default function AdminPage() {
   const [search, setSearch] = useState('')
   const [editingItem, setEditingItem] = useState(null)
   const [showForm, setShowForm] = useState(false)
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const limit = 15
   const { addToast } = useToast()
 
-  const fetchData = async () => {
+  const fetchData = async (targetPage = page) => {
     setLoading(true)
     try {
+      const params = { page: targetPage, limit }
+      if (search.trim()) params.q = search.trim()
+
       const [listRes, catRes] = await Promise.all([
-        commonsenseAPI.list({ page: 1, limit: 100 }),
+        commonsenseAPI.list(params),
         commonsenseAPI.categories()
       ])
       const data = listRes.data.data || []
       setItems(data)
+      setTotal(listRes.data.total || 0)
       setCategories(catRes.data.data || [])
 
+      // Fetch stats separately (all items for category counts)
+      const allRes = await commonsenseAPI.list({ page: 1, limit: 1000 })
+      const allData = allRes.data.data || []
       const byCategory = {}
-      for (const item of data) {
+      for (const item of allData) {
         byCategory[item.category] = (byCategory[item.category] || 0) + 1
       }
-      setStats({ total: data.length, byCategory })
+      setStats({ total: allRes.data.total || 0, byCategory })
     } catch (err) {
-      addToast('加载失败', 'error')
+      addToast(err.response?.data?.error || '加载失败', 'error')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchData()
+    fetchData(1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const filteredItems = search.trim()
-    ? items.filter((item) =>
-        item.question.toLowerCase().includes(search.toLowerCase()) ||
-        item.answer.toLowerCase().includes(search.toLowerCase()) ||
-        item.category.toLowerCase().includes(search.toLowerCase())
-      )
-    : items
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1)
+      fetchData(1)
+    }, 300)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search])
+
+  useEffect(() => {
+    fetchData(page)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page])
 
   const handleDelete = async (id) => {
     if (!confirm(`确定要删除 ${id} 吗？`)) return
     try {
       await commonsenseAPI.delete(id)
       addToast('删除成功', 'success')
-      fetchData()
+      fetchData(page)
     } catch (err) {
-      addToast('删除失败', 'error')
+      addToast(err.response?.data?.error || '删除失败', 'error')
     }
   }
 
   const handleSave = async (e) => {
     e.preventDefault()
     try {
+      const payload = {
+        ...editingItem,
+        tags: typeof editingItem.tags === 'string'
+          ? editingItem.tags.split(',').map((t) => t.trim()).filter(Boolean)
+          : editingItem.tags || [],
+        related: typeof editingItem.related === 'string'
+          ? editingItem.related.split(',').map((t) => t.trim()).filter(Boolean)
+          : editingItem.related || []
+      }
       if (editingItem.id) {
-        await commonsenseAPI.update(editingItem.id, editingItem)
+        await commonsenseAPI.update(editingItem.id, payload)
         addToast('更新成功', 'success')
       } else {
-        await commonsenseAPI.create(editingItem)
+        await commonsenseAPI.create(payload)
         addToast('创建成功', 'success')
       }
       setShowForm(false)
       setEditingItem(null)
-      fetchData()
+      fetchData(page)
     } catch (err) {
       addToast(err.response?.data?.error || '保存失败', 'error')
     }
   }
 
   const startEdit = (item) => {
-    setEditingItem({ ...item })
+    setEditingItem({
+      ...item,
+      tags: Array.isArray(item.tags) ? item.tags.join(', ') : item.tags || '',
+      related: Array.isArray(item.related) ? item.related.join(', ') : item.related || ''
+    })
     setShowForm(true)
   }
 
@@ -96,12 +127,14 @@ export default function AdminPage() {
       trap: '',
       context: '',
       difficulty: 'medium',
-      tags: [],
-      related: [],
+      tags: '',
+      related: '',
       source: ''
     })
     setShowForm(true)
   }
+
+  const totalPages = Math.ceil(total / limit) || 1
 
   return (
     <div className="page-container max-w-6xl">
@@ -180,12 +213,38 @@ export default function AdminPage() {
                 <input className="input" value={editingItem.trap} onChange={(e) => setEditingItem({ ...editingItem, trap: e.target.value })} />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-1">上下文 / 场景</label>
+                <input className="input" value={editingItem.context} onChange={(e) => setEditingItem({ ...editingItem, context: e.target.value })} placeholder="例如：职场、社交、面试..." />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-1">难度</label>
                 <select className="input" value={editingItem.difficulty} onChange={(e) => setEditingItem({ ...editingItem, difficulty: e.target.value })}>
                   <option value="easy">简单</option>
                   <option value="medium">中等</option>
                   <option value="hard">困难</option>
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">标签</label>
+                <input
+                  className="input"
+                  value={editingItem.tags}
+                  onChange={(e) => setEditingItem({ ...editingItem, tags: e.target.value })}
+                  placeholder="用逗号分隔，例如：职场, 沟通, 礼仪"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">关联条目 ID</label>
+                <input
+                  className="input"
+                  value={editingItem.related}
+                  onChange={(e) => setEditingItem({ ...editingItem, related: e.target.value })}
+                  placeholder="用逗号分隔，例如：work-01, social-03"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">来源</label>
+                <input className="input" value={editingItem.source} onChange={(e) => setEditingItem({ ...editingItem, source: e.target.value })} placeholder="例如：观察总结、用户反馈" />
               </div>
               <div className="flex gap-2 pt-2">
                 <button type="submit" className="btn-primary flex-1">保存</button>
@@ -202,46 +261,80 @@ export default function AdminPage() {
           <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto" />
         </div>
       ) : (
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
-              <tr>
-                <th className="px-4 py-3 text-left font-medium">ID</th>
-                <th className="px-4 py-3 text-left font-medium">分类</th>
-                <th className="px-4 py-3 text-left font-medium">问题</th>
-                <th className="px-4 py-3 text-left font-medium">难度</th>
-                <th className="px-4 py-3 text-right font-medium">操作</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredItems.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-gray-500 font-mono text-xs">{item.id}</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600">
-                      {item.category}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 max-w-xs truncate">{item.question}</td>
-                  <td className="px-4 py-3">
-                    {item.difficulty === 'easy' ? '⭐' : item.difficulty === 'hard' ? '⭐⭐⭐' : '⭐⭐'}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <button onClick={() => startEdit(item)} className="text-gray-400 hover:text-gray-700 mr-2">
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => handleDelete(item.id)} className="text-gray-400 hover:text-red-500">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </td>
+        <>
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-600">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium">ID</th>
+                  <th className="px-4 py-3 text-left font-medium">分类</th>
+                  <th className="px-4 py-3 text-left font-medium">问题</th>
+                  <th className="px-4 py-3 text-left font-medium">难度</th>
+                  <th className="px-4 py-3 text-right font-medium">操作</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {filteredItems.length === 0 && (
-            <div className="text-center py-12 text-gray-400 text-sm">暂无数据</div>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {items.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-gray-500 font-mono text-xs">{item.id}</td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600">
+                        {item.category}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 max-w-xs truncate">{item.question}</td>
+                    <td className="px-4 py-3">
+                      {item.difficulty === 'easy' ? '⭐' : item.difficulty === 'hard' ? '⭐⭐⭐' : '⭐⭐'}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button onClick={() => startEdit(item)} className="text-gray-400 hover:text-gray-700 mr-2">
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete(item.id)} className="text-gray-400 hover:text-red-500">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {items.length === 0 && (
+              <div className="text-center py-12">
+                <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500 text-sm mb-3">暂无数据</p>
+                <button onClick={startCreate} className="text-sm text-gray-900 hover:underline inline-flex items-center gap-1">
+                  <Plus className="w-4 h-4" />
+                  创建第一条常识
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-3 mt-6">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="btn-ghost text-xs px-3 py-1.5 inline-flex items-center gap-1 disabled:opacity-40"
+              >
+                <ChevronLeft className="w-3 h-3" />
+                上一页
+              </button>
+              <span className="text-xs text-gray-500">
+                第 {page} / {totalPages} 页 · 共 {total} 条
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="btn-ghost text-xs px-3 py-1.5 inline-flex items-center gap-1 disabled:opacity-40"
+              >
+                下一页
+                <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
           )}
-        </div>
+        </>
       )}
     </div>
   )

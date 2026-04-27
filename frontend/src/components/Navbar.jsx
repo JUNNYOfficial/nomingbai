@@ -4,7 +4,7 @@ import { Bot, BookOpen, History, User, LogOut, Menu, X, Settings } from 'lucide-
 import { useState } from 'react'
 
 export default function Navbar() {
-  const { user, isLoggedIn, logout, loading } = useAuth()
+  const { user, isLoggedIn, logout, loading, isAdmin } = useAuth()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -13,8 +13,6 @@ export default function Navbar() {
     { to: '/browse', label: '常识库', icon: BookOpen },
     { to: '/history', label: '历史记录', icon: History },
   ]
-
-  const adminItem = { to: '/admin', label: '管理', icon: Settings }
 
   const isActive = (path) => {
     if (path === '/') {
@@ -54,21 +52,27 @@ export default function Navbar() {
               <div className="w-16 h-5 bg-gray-100 rounded animate-pulse" />
             ) : isLoggedIn ? (
               <>
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-sm transition-colors ${
+                      isActive('/admin')
+                        ? 'bg-gray-100 text-gray-900'
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                    title="管理后台"
+                  >
+                    <Settings className="w-4 h-4" />
+                  </Link>
+                )}
                 <Link
-                  to="/admin"
-                  className={`flex items-center gap-1 px-2 py-1 rounded-md text-sm transition-colors ${
-                    isActive('/admin')
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                  title="管理后台"
+                  to="/profile"
+                  className="text-sm text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1"
+                  title="个人资料"
                 >
-                  <Settings className="w-4 h-4" />
-                </Link>
-                <span className="text-sm text-gray-500 flex items-center gap-1">
                   <User className="w-4 h-4" />
                   {user?.username}
-                </span>
+                </Link>
                 <button
                   onClick={() => {
                     if (confirm('确定要退出登录吗？')) {
@@ -119,17 +123,31 @@ export default function Navbar() {
               {isLoggedIn ? (
                 <>
                   <Link
-                    to="/admin"
+                    to="/profile"
                     onClick={() => setMenuOpen(false)}
                     className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive('/admin')
+                      isActive('/profile')
                         ? 'bg-gray-100 text-gray-900'
                         : 'text-gray-600 hover:bg-gray-50'
                     }`}
                   >
-                    <Settings className="w-4 h-4" />
-                    管理后台
+                    <User className="w-4 h-4" />
+                    个人资料
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setMenuOpen(false)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${
+                        isActive('/admin')
+                          ? 'bg-gray-100 text-gray-900'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Settings className="w-4 h-4" />
+                      管理后台
+                    </Link>
+                  )}
                   <button
                     onClick={() => {
                       if (confirm('确定要退出登录吗？')) {

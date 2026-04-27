@@ -53,7 +53,7 @@ export default function BrowsePage() {
     }
     doFetch()
     return () => { cancelled = true }
-  }, [page, activeCategory])
+  }, [page, activeCategory, search])
 
   // Debounce search: reset page and fetch
   useEffect(() => {
