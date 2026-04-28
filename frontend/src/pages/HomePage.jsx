@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
 import { ArrowRight, Sparkles, BookOpen, Clock, Shield } from 'lucide-react'
 import { useEffect } from 'react'
 
 export default function HomePage() {
   useEffect(() => { document.title = '未言 — 解答生活中的隐性常识' }, [])
-  const { isLoggedIn } = useAuth()
 
   return (
     <div className="page-container">
@@ -23,22 +21,13 @@ export default function HomePage() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          {isLoggedIn ? (
-            <Link to="/chat" className="btn-primary text-base px-6 py-3">
-              开始对话
-              <ArrowRight className="w-4 h-4 ml-1.5" />
-            </Link>
-          ) : (
-            <>
-              <Link to="/login" className="btn-primary text-base px-6 py-3">
-                登录 / 注册
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Link>
-              <Link to="/browse" className="btn-secondary text-base px-6 py-3">
-                先逛逛常识库
-              </Link>
-            </>
-          )}
+          <Link to="/chat" className="btn-primary text-base px-6 py-3">
+            开始对话
+            <ArrowRight className="w-4 h-4 ml-1.5" />
+          </Link>
+          <Link to="/browse" className="btn-secondary text-base px-6 py-3">
+            逛逛常识库
+          </Link>
         </div>
       </div>
 

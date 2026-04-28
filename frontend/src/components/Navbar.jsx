@@ -50,9 +50,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden sm:flex items-center gap-3">
-            {loading ? (
-              <div className="w-16 h-5 bg-gray-100 rounded animate-pulse" />
-            ) : isLoggedIn ? (
+            {isLoggedIn && (
               <>
                 {isAdmin && (
                   <Link
@@ -75,29 +73,27 @@ export default function Navbar() {
                   <User className="w-4 h-4" />
                   {user?.username}
                 </Link>
-                <button
-                  onClick={toggleTheme}
-                  className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
-                  title={theme === 'dark' ? '切换亮色模式' : '切换暗色模式'}
-                >
-                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                </button>
-                <button
-                  onClick={() => {
-                    if (confirm('确定要退出登录吗？')) {
-                      logout()
-                    }
-                  }}
-                  className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  退出
-                </button>
               </>
-            ) : (
-              <Link to="/login" className="btn-primary text-xs py-1.5 px-3">
-                登录
-              </Link>
+            )}
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+              title={theme === 'dark' ? '切换亮色模式' : '切换暗色模式'}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            {isLoggedIn && (
+              <button
+                onClick={() => {
+                  if (confirm('确定要退出登录吗？')) {
+                    logout()
+                  }
+                }}
+                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                退出
+              </button>
             )}
           </div>
 
@@ -129,7 +125,7 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="pt-2 border-t border-gray-100">
-              {isLoggedIn ? (
+              {isLoggedIn && (
                 <>
                   <Link
                     to="/profile"
@@ -170,15 +166,6 @@ export default function Navbar() {
                     退出登录
                   </button>
                 </>
-              ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-gray-900 font-medium"
-                >
-                  <User className="w-4 h-4" />
-                  登录 / 注册
-                </Link>
               )}
             </div>
           </div>
