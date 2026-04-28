@@ -34,10 +34,6 @@ jobs:
       - name: Build
         run: npm run build --prefix frontend
         env:
-          # GitHub Pages project site uses /repo-name/ as base path
-          # If you set up a custom domain in repo Settings > Pages,
-          # change this to '/' and update the API URL below.
-          VITE_BASE_PATH: /nomingbai/
           # Replace with your deployed backend URL (e.g. Render/Railway)
           # Leave empty to use relative /api (works when backend is co-hosted)
           VITE_API_BASE_URL: ''
