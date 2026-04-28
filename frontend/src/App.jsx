@@ -29,7 +29,7 @@ function Layout() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/chat" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
+          <Route path="/chat" element={<ChatPage />} />
           <Route path="/history" element={<PrivateRoute><HistoryPage /></PrivateRoute>} />
           <Route path="/browse" element={<BrowsePage />} />
           <Route path="/browse/:id" element={<DetailPage />} />

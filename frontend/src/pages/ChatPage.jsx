@@ -35,9 +35,31 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copiedIndex, setCopiedIndex] = useState(null)
+  const [rateLimit, setRateLimit] = useState({ count: 0, resetAt: 0 })
   const { addToast } = useToast()
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
+
+  // Anti-spam / rate limiting
+  const checkRateLimit = () => {
+    const now = Date.now()
+    const windowMs = 60 * 1000 // 1 minute
+    const maxRequests = 10 // 10 requests per minute for anonymous
+
+    if (now > rateLimit.resetAt) {
+      setRateLimit({ count: 1, resetAt: now + windowMs })
+      return true
+    }
+
+    if (rateLimit.count >= maxRequests) {
+      const waitSeconds = Math.ceil((rateLimit.resetAt - now) / 1000)
+      addToast(`发送太频繁，请 ${waitSeconds} 秒后再试`, 'error')
+      return false
+    }
+
+    setRateLimit((prev) => ({ ...prev, count: prev.count + 1 }))
+    return true
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -73,6 +95,7 @@ export default function ChatPage() {
 
     const userMsg = regeneratePrompt || input.trim()
     if (!userMsg || loading) return
+    if (!checkRateLimit()) return
     if (!regeneratePrompt) {
       setInput('')
       localStorage.removeItem('nomingbai_chat_draft')
