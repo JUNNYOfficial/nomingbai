@@ -1,8 +1,63 @@
 import { useState, useRef, useEffect } from 'react'
 import { agentAPI } from '../api'
 import { useToast } from '../components/Toast'
-import { Send, Lightbulb, User, Bot, AlertTriangle, Copy, Check, RotateCcw, Download } from 'lucide-react'
+import { Send, Lightbulb, User, Bot, AlertTriangle, Copy, Check, RotateCcw, Download, ChevronDown } from 'lucide-react'
 import MarkdownText from '../components/MarkdownText'
+
+// 分离主要内容与折叠的次要/相关内容
+function splitContent(text) {
+  const markers = [
+    { regex: /\n?---secondary---\n/, type: 'secondary' },
+    { regex: /\n?---related---\n/, type: 'related' }
+  ]
+  let matches = []
+  for (const m of markers) {
+    const regex = new RegExp(m.regex.source, 'g')
+    let match
+    while ((match = regex.exec(text)) !== null) {
+      matches.push({ index: match.index, type: m.type, endIndex: match.index + match[0].length })
+    }
+  }
+  matches.sort((a, b) => a.index - b.index)
+  if (matches.length === 0) return { main: text, extras: [] }
+
+  const main = text.slice(0, matches[0].index)
+  const extras = []
+  for (let i = 0; i < matches.length; i++) {
+    const start = matches[i].endIndex
+    const end = i + 1 < matches.length ? matches[i + 1].index : text.length
+    extras.push({ type: matches[i].type, body: text.slice(start, end) })
+  }
+  return { main, extras }
+}
+
+function SecondaryCard({ type, body }) {
+  const [open, setOpen] = useState(false)
+  const title = type === 'secondary' ? '你可能还想了解' : '相关常识'
+  const lines = body.split('\n')
+  const heading = lines[0] || ''
+  const content = lines.slice(1).join('\n')
+
+  return (
+    <div className="mt-3 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-3 py-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      >
+        <span className="flex items-center gap-1.5 truncate">
+          <Lightbulb className="w-3 h-3 flex-shrink-0" />
+          <span className="truncate">{title}{heading ? `：${heading}` : ''}</span>
+        </span>
+        <ChevronDown className={`w-3 h-3 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="px-3 py-2 text-xs text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+          <MarkdownText text={content} />
+        </div>
+      )}
+    </div>
+  )
+}
 
 const EXAMPLES = [
   '一会儿代表多长时间？',
@@ -300,7 +355,17 @@ export default function ChatPage() {
                     : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 rounded-bl-md'
                 }`}
               >
-                {msg.role === 'user' ? msg.content : <MarkdownText text={msg.content} />}
+                {msg.role === 'user' ? msg.content : (() => {
+                  const { main, extras } = splitContent(msg.content)
+                  return (
+                    <>
+                      <MarkdownText text={main} />
+                      {extras.map((extra, idx) => (
+                        <SecondaryCard key={`${i}-${idx}`} type={extra.type} body={extra.body} />
+                      ))}
+                    </>
+                  )
+                })()}
                 <div className={`flex items-center justify-between gap-3 mt-1.5 ${msg.role === 'user' ? 'text-gray-400' : 'text-gray-400'}`}>
                   <span className="text-[10px]">
                     {msg.time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}

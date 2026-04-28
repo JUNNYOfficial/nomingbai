@@ -25,25 +25,28 @@ export async function generateResponse(prompt) {
 
   const topAgentScore = agentResults.length > 0 ? agentResults[0].score : 0
 
-  const useAgentData = topAgentScore >= 6 && topAgentScore > topCommonsenseScore * 2
-  const useCommonsenseHigh = topCommonsenseScore >= 12 && !useAgentData
-  const useCommonsenseMedium = topCommonsenseScore >= 5 && !useAgentData && topAgentScore < 6
+  // 阈值与 commonsenseSearch.js 的权重体系对应
+  // 新权重下：强匹配通常≥20，中等匹配8-20，弱匹配<8
+  const useAgentData = topAgentScore >= 8 && topAgentScore > topCommonsenseScore * 2
+  const useCommonsenseHigh = topCommonsenseScore >= 20 && !useAgentData
+  const useCommonsenseMedium = topCommonsenseScore >= 8 && !useAgentData && topAgentScore < 6
 
   if (useAgentData) {
     const primary = agentResults[0].item
     const formatted = formatConversationResponse(primary)
     if (formatted) {
       let output = formatted
-      if (agentResults.length >= 2 && agentResults[1].score >= 4) {
+      if (agentResults.length >= 2 && agentResults[1].score >= 6) {
         const secondary = agentResults[1].item
         const secFormatted = formatConversationResponse(secondary)
         if (secFormatted) {
-          output += `\n\n📌 你可能还想了解：${secondary.intent}\n${secFormatted.split('\n\n').slice(1).join('\n\n').substring(0, 200)}...`
+          const secBody = secFormatted.split('\n\n').slice(1).join('\n\n').substring(0, 160)
+          output += `\n\n---secondary---\n${secondary.intent}\n${secBody}...`
         }
       }
-      if (topCommonsenseScore >= 5) {
+      if (topCommonsenseScore >= 8) {
         const cs = scoredResults[0].item
-        output += `\n\n📖 相关常识：${cs.question}\n${cs.answer}`
+        output += `\n\n---related---\n${cs.question}\n${cs.answer}`
       }
       return output
     }
@@ -52,9 +55,9 @@ export async function generateResponse(prompt) {
   if (useCommonsenseHigh) {
     const primary = scoredResults[0].item
     let output = `${primary.answer}`
-    if (scoredResults.length >= 2 && scoredResults[1].score >= 8) {
+    if (scoredResults.length >= 2 && scoredResults[1].score >= 30) {
       const secondary = scoredResults[1].item
-      output += `\n\n📌 你可能还想了解：${secondary.question}\n${secondary.answer}`
+      output += `\n\n---secondary---\n${secondary.question}\n${secondary.answer}`
     }
     output += `\n\n⚠️ 认知陷阱：${primary.trap}`
     output += `\n📊 难度：${difficultyToStars(primary.difficulty)}`
@@ -67,9 +70,9 @@ export async function generateResponse(prompt) {
   if (useCommonsenseMedium) {
     const primary = scoredResults[0].item
     let output = `${primary.answer}`
-    if (scoredResults.length >= 2 && scoredResults[1].score >= 8) {
+    if (scoredResults.length >= 2 && scoredResults[1].score >= 30) {
       const secondary = scoredResults[1].item
-      output += `\n\n📌 你可能还想了解：${secondary.question}\n${secondary.answer}`
+      output += `\n\n---secondary---\n${secondary.question}\n${secondary.answer}`
     }
     output += `\n\n⚠️ 认知陷阱：${primary.trap}`
     output += `\n📊 难度：${difficultyToStars(primary.difficulty)}`
@@ -79,12 +82,12 @@ export async function generateResponse(prompt) {
     return output
   }
 
-  if (topCommonsenseScore >= 5) {
+  if (topCommonsenseScore >= 8) {
     const primary = scoredResults[0].item
     let output = `根据你的问题，我找到了相关内容：\n\n${primary.question}\n\n${primary.answer}`
-    if (scoredResults.length >= 2) {
+    if (scoredResults.length >= 2 && scoredResults[1].score >= 15) {
       const others = scoredResults.slice(1, 3)
-      output += '\n\n💡 相关常识：'
+      output += '\n\n---related---'
       for (const r of others) {
         output += `\n  · ${r.item.question}`
       }
@@ -92,7 +95,7 @@ export async function generateResponse(prompt) {
     return output
   }
 
-  if (topAgentScore >= 3) {
+  if (topAgentScore >= 4) {
     const primary = agentResults[0].item
     const formatted = formatConversationResponse(primary)
     if (formatted) return formatted

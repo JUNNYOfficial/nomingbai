@@ -30,12 +30,34 @@ function scoreTokens(query, text) {
   const qTokens = extractTokens(query)
   const tTokens = extractTokens(text)
   let score = 0
+  let matchedTokens = 0
+
   for (const qt of qTokens) {
+    let best = 0
     for (const tt of tTokens) {
-      if (qt === tt) score += 3
-      else if (tt.includes(qt) || qt.includes(tt)) score += 1.5
+      if (qt === tt) {
+        // 精确匹配：短词权重低（易跨主题误配），长词权重高（区分度强）
+        const weight = qt.length >= 4 ? 6 : qt.length >= 3 ? 4 : 1.5
+        best = Math.max(best, weight)
+      } else if (qt.length >= 3 && tt.length >= 3 && (tt.includes(qt) || qt.includes(tt))) {
+        // 仅≥3字token允许partial match，防止"吃饭"误配"饭局"
+        best = Math.max(best, 0.5)
+      }
+    }
+    if (best > 0) {
+      score += best
+      matchedTokens++
     }
   }
+
+  // 覆盖度惩罚：如果查询中大量token未命中，说明主题不匹配
+  // 例如"吃饭用左手还是右手"只命中"左手""右手"，但"吃饭"等核心词全失
+  if (qTokens.length >= 3) {
+    const coverage = matchedTokens / qTokens.length
+    if (coverage < 0.25) score *= 0.15
+    else if (coverage < 0.4) score *= 0.4
+  }
+
   return score
 }
 
@@ -59,11 +81,13 @@ export async function searchCommonsense(query, limit = 5) {
 
   const scored = items.map((item) => {
     let score = 0
-    score += scoreTokens(query, item.question) * 4
-    score += scoreTokens(query, item.answer) * 2
-    score += scoreTokens(query, item.category) * 3
-    score += scoreKeywords(query, item.tags) * 2
-    if (item.context) score += scoreTokens(query, item.context)
+    // question 和 tags 权重最高：直接反映条目主题
+    score += scoreTokens(query, item.question) * 6
+    score += scoreKeywords(query, item.tags) * 4
+    score += scoreTokens(query, item.category) * 2
+    // answer 权重降低：避免 answer 中偶然出现的词误导匹配（如"饭局就坐"answer里也有"左手""右手"）
+    score += scoreTokens(query, item.answer) * 1
+    if (item.context) score += scoreTokens(query, item.context) * 0.5
     return { item, score }
   })
 
