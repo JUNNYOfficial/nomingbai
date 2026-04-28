@@ -19,5 +19,16 @@ export default defineConfig({
     emptyOutDir: true,
     // Transpile modern syntax for Safari 13+ compatibility
     target: ['safari13', 'chrome80', 'firefox72'],
+    rollupOptions: {
+      output: {
+        // Fixed filenames so cached HTML never references deleted files
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: (info) => {
+          if (info.name === 'index.css') return 'assets/[name].[ext]'
+          return 'assets/[name]-[hash][extname]'
+        }
+      }
+    }
   }
 })
