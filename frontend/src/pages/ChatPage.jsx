@@ -101,55 +101,76 @@ export default function ChatPage() {
       { role: 'assistant', content: '', time: new Date(), _id: assistantId }
     ])
 
+    // Safari < 15 doesn't support response.body as ReadableStream
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    const safariVersion = isSafari ? parseInt((navigator.userAgent.match(/Version\/(\d+)/) || [])[1]) : 99
+    const useStream = !isSafari || safariVersion >= 15
+
     try {
-      const response = await agentAPI.invokeStream(userMsg)
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-      let fullOutput = ''
+      if (useStream) {
+        const response = await agentAPI.invokeStream(userMsg)
+        // Fallback for browsers without ReadableStream support on fetch response
+        if (!response.body || !response.body.getReader) {
+          throw new Error('STREAM_UNSUPPORTED')
+        }
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+        let fullOutput = ''
 
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
 
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop() || ''
 
-        for (const line of lines) {
-          const trimmed = line.trim()
-          if (!trimmed.startsWith('data: ')) continue
-          const jsonStr = trimmed.slice(6)
-          if (jsonStr === '[DONE]') continue
-          try {
-            const event = JSON.parse(jsonStr)
-            if (event.chunk) {
-              fullOutput += event.chunk
-              setMessages((prev) => {
-                const idx = prev.findIndex((m) => m._id === assistantId)
-                if (idx === -1) return prev
-                const updated = [...prev]
-                updated[idx] = { ...updated[idx], content: fullOutput }
-                return updated
-              })
+          for (const line of lines) {
+            const trimmed = line.trim()
+            if (!trimmed.startsWith('data: ')) continue
+            const jsonStr = trimmed.slice(6)
+            if (jsonStr === '[DONE]') continue
+            try {
+              const event = JSON.parse(jsonStr)
+              if (event.chunk) {
+                fullOutput += event.chunk
+                setMessages((prev) => {
+                  const idx = prev.findIndex((m) => m._id === assistantId)
+                  if (idx === -1) return prev
+                  const updated = [...prev]
+                  updated[idx] = { ...updated[idx], content: fullOutput }
+                  return updated
+                })
+              }
+              if (event.error) {
+                throw new Error(event.error)
+              }
+            } catch {
+              // ignore malformed SSE lines
             }
-            if (event.error) {
-              throw new Error(event.error)
-            }
-          } catch {
-            // ignore malformed SSE lines
           }
         }
-      }
 
-      // Finalize: replace placeholder with clean message (remove _id)
-      setMessages((prev) => {
-        const idx = prev.findIndex((m) => m._id === assistantId)
-        if (idx === -1) return prev
-        const updated = [...prev]
-        updated[idx] = { role: 'assistant', content: fullOutput, time: new Date() }
-        return updated
-      })
+        // Finalize
+        setMessages((prev) => {
+          const idx = prev.findIndex((m) => m._id === assistantId)
+          if (idx === -1) return prev
+          const updated = [...prev]
+          updated[idx] = { role: 'assistant', content: fullOutput, time: new Date() }
+          return updated
+        })
+      } else {
+        // Fallback for older Safari: use normal API
+        const res = await agentAPI.invoke(userMsg)
+        setMessages((prev) => {
+          const idx = prev.findIndex((m) => m._id === assistantId)
+          if (idx === -1) return prev
+          const updated = [...prev]
+          updated[idx] = { role: 'assistant', content: res.data.output, time: new Date(res.data.createdAt) }
+          return updated
+        })
+      }
     } catch (err) {
       const msg = err.message || '调用失败，请稍后重试'
       setError(msg)

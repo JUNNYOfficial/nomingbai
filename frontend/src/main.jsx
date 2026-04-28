@@ -7,10 +7,13 @@ import { ToastProvider } from './components/Toast'
 import { ThemeProvider } from './components/ThemeProvider'
 import './index.css'
 
-// Register Service Worker for PWA
-if ('serviceWorker' in navigator) {
+// Register Service Worker for PWA (skip on Safari < 16 which has limited SW support)
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+const safariVersion = isSafari ? parseInt((navigator.userAgent.match(/Version\/(\d+)/) || [])[1]) : 99
+
+if ('serviceWorker' in navigator && !(isSafari && safariVersion < 16)) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('./sw.js')
       .then((reg) => console.log('SW registered:', reg.scope))
       .catch((err) => console.log('SW registration failed:', err))
   })

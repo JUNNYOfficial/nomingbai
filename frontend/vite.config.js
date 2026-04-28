@@ -17,5 +17,7 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
     emptyOutDir: true,
+    // Transpile modern syntax for Safari 13+ compatibility
+    target: ['safari13', 'chrome80', 'firefox72'],
   }
 })
