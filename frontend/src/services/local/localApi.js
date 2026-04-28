@@ -113,18 +113,38 @@ export const localAgentAPI = {
   invokeStream: async (prompt) => {
     // Local stream: return a Response-like object with a readable body
     const encoder = new TextEncoder()
-    const stream = new ReadableStream({
-      async start(controller) {
-        const gen = streamResponse(prompt)
-        for await (const event of gen) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`))
+    try {
+      const stream = new ReadableStream({
+        async start(controller) {
+          try {
+            const gen = streamResponse(prompt)
+            for await (const event of gen) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`))
+            }
+            controller.close()
+          } catch (e) {
+            controller.error(e)
+          }
         }
-        controller.close()
-      }
-    })
-    return new Response(stream, {
-      headers: { 'Content-Type': 'text/event-stream' }
-    })
+      })
+      return new Response(stream, {
+        headers: { 'Content-Type': 'text/event-stream' }
+      })
+    } catch (e) {
+      // Edge InPrivate or strict mode may block ReadableStream construction
+      // Fallback: return the full text as a single "chunk"
+      const output = await generateResponse(prompt)
+      const singleStream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: output })}\n\n`))
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`))
+          controller.close()
+        }
+      })
+      return new Response(singleStream, {
+        headers: { 'Content-Type': 'text/event-stream' }
+      })
+    }
   },
 
   history: async (page = 1, limit = 20) => {

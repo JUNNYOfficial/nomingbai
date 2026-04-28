@@ -15,18 +15,24 @@ const DATA_FILES = [
 export async function loadAllData() {
   if (cache) return cache
 
-  const results = await Promise.all(
-    DATA_FILES.map(async (file) => {
-      try {
-        const res = await fetch(`./data/${file}`)
-        if (!res.ok) return { file, data: [] }
-        const data = await res.json()
-        return { file, data: Array.isArray(data) ? data : [] }
-      } catch {
-        return { file, data: [] }
+  // Edge sometimes hangs on parallel fetch; use sequential with timeout
+  const results = []
+  for (const file of DATA_FILES) {
+    try {
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 5000)
+      const res = await fetch(`./data/${file}`, { signal: controller.signal })
+      clearTimeout(timer)
+      if (!res.ok) {
+        results.push({ file, data: [] })
+        continue
       }
-    })
-  )
+      const data = await res.json()
+      results.push({ file, data: Array.isArray(data) ? data : [] })
+    } catch {
+      results.push({ file, data: [] })
+    }
+  }
 
   cache = {
     commonsense: results.find((r) => r.file === 'commonsense_database.json')?.data || [],
