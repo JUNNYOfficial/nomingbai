@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -40,6 +40,9 @@ export const authAPI = {
   login: (username, password) => api.post('/auth/login', { username, password }),
   me: () => api.get('/auth/me'),
   changePassword: (currentPassword, newPassword) => api.post('/auth/change-password', { currentPassword, newPassword }),
+  listUsers: (params) => api.get('/auth/users', { params }),
+  deleteUser: (id) => api.delete(`/auth/users/${id}`),
+  updateUserRole: (id, role) => api.put(`/auth/users/${id}/role`, { role }),
 }
 
 export const agentAPI = {

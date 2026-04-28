@@ -107,9 +107,56 @@ async function updatePassword(id, currentPassword, newPassword) {
   return true;
 }
 
+async function listUsers(page = 1, limit = 20) {
+  if (!db.isConfigured()) {
+    return { users: memoryUsers.map((u) => ({ id: u.id, username: u.username, role: u.role, created_at: u.created_at })), total: memoryUsers.length };
+  }
+  await ensureUserTable();
+  const offset = (page - 1) * limit;
+  const countRes = await db.query("SELECT COUNT(*) as cnt FROM users");
+  const total = Number(countRes[0].cnt);
+  const rows = await db.query(
+    "SELECT id, username, role, created_at FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?",
+    [limit, offset]
+  );
+  return { users: rows, total };
+}
+
+async function deleteUser(id) {
+  if (!db.isConfigured()) {
+    const idx = memoryUsers.findIndex((u) => u.id === id);
+    if (idx === -1) throw new Error("用户不存在");
+    memoryUsers.splice(idx, 1);
+    return true;
+  }
+  await ensureUserTable();
+  const result = await db.query("DELETE FROM users WHERE id = ?", [id]);
+  if (result.affectedRows === 0) throw new Error("用户不存在");
+  return true;
+}
+
+async function updateUserRole(id, role) {
+  if (!['user', 'admin'].includes(role)) {
+    throw new Error("无效的角色");
+  }
+  if (!db.isConfigured()) {
+    const user = memoryUsers.find((u) => u.id === id);
+    if (!user) throw new Error("用户不存在");
+    user.role = role;
+    return true;
+  }
+  await ensureUserTable();
+  const result = await db.query("UPDATE users SET role = ? WHERE id = ?", [role, id]);
+  if (result.affectedRows === 0) throw new Error("用户不存在");
+  return true;
+}
+
 module.exports = {
   registerUser,
   authenticateUser,
   getUserById,
-  updatePassword
+  updatePassword,
+  listUsers,
+  deleteUser,
+  updateUserRole
 };

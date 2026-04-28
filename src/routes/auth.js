@@ -6,8 +6,8 @@
  */
 
 const express = require("express");
-const { registerUser, authenticateUser, getUserById, updatePassword } = require("../services/userService");
-const { signToken, verifyToken, validatePassword } = require("../lib/auth");
+const { registerUser, authenticateUser, getUserById, updatePassword, listUsers, deleteUser, updateUserRole } = require("../services/userService");
+const { signToken, verifyToken, requireAdmin, validatePassword } = require("../lib/auth");
 
 const router = express.Router();
 
@@ -133,6 +133,46 @@ router.post("/change-password", verifyToken, async (req, res) => {
     res.json({ message: "密码修改成功" });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// Admin-only user management
+router.get("/users", verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.max(1, Math.min(100, Number(req.query.limit) || 20));
+    const result = await listUsers(page, limit);
+    res.json({ data: result.users, total: result.total, page, limit });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete("/users/:id", verifyToken, requireAdmin, async (req, res) => {
+  try {
+    await deleteUser(Number(req.params.id));
+    res.json({ message: "用户已删除" });
+  } catch (error) {
+    if (error.message === "用户不存在") {
+      return res.status(404).json({ error: error.message });
+    }
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put("/users/:id/role", verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const { role } = req.body;
+    if (!role) {
+      return res.status(400).json({ error: "role is required" });
+    }
+    await updateUserRole(Number(req.params.id), role);
+    res.json({ message: "角色已更新" });
+  } catch (error) {
+    if (error.message === "用户不存在" || error.message === "无效的角色") {
+      return res.status(400).json({ error: error.message });
+    }
+    res.status(500).json({ error: error.message });
   }
 });
 
